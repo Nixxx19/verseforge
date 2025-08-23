@@ -132,25 +132,27 @@ const HeroSection = () => {
 
       {/* Main content */}
       <div className="container mx-auto px-12 text-center relative z-10">
-        <h1 className="font-sans text-6xl md:text-[79px] font-bold text-white mb-8 leading-tight max-w-6xl mx-auto">
-          {showInitialPrompt ? (
-            <>
-              {displayInitialText}
-              <span className={`${showCursor ? 'opacity-60' : 'opacity-0'} transition-opacity duration-100 text-4xl md:text-[66px] font-extralight inline-block leading-none text-white`}>|</span>
-            </>
-          ) : (
-            <>
-              Create a {displayArtist || ""} {displayMiddle || ""} {displayText || ""}
-              <span className={`${showCursor ? 'opacity-70' : 'opacity-0'} transition-opacity duration-100 text-4xl md:text-[66px] font-extralight inline-block leading-none text-white`}>|</span>
-            </>
-          )}
-        </h1>
+        <div className="h-48 flex items-center justify-center mb-8">
+          <h1 className="font-sans text-6xl md:text-[79px] font-bold text-white leading-tight max-w-6xl mx-auto">
+            {showInitialPrompt ? (
+              <>
+                {displayInitialText}
+                <span className={`${showCursor ? 'opacity-60' : 'opacity-0'} transition-opacity duration-100 text-4xl md:text-[66px] font-extralight inline-block leading-none text-white`}>|</span>
+              </>
+            ) : (
+              <>
+                Create a {displayArtist || ""} {displayMiddle || ""} {displayText || ""}
+                <span className={`${showCursor ? 'opacity-70' : 'opacity-0'} transition-opacity duration-100 text-4xl md:text-[66px] font-extralight inline-block leading-none text-white`}>|</span>
+              </>
+            )}
+          </h1>
+        </div>
         
         <p className="text-white/90 text-xl md:text-xl mb-16 max-w-2xl mx-auto font-light leading-relaxed">
           The world's most advanced AI music creation platform. Transform any idea into professional-quality music in seconds.
         </p>
 
-        {/* Premium Search Input */}
+        {/* Prompt Input Box */}
         <div className="max-w-3xl mx-auto mb-12">
           <div className="relative flex items-center gap-4 bg-white/10 backdrop-blur-glass border border-white/30 rounded-2xl p-4 shadow-glass hover:border-white/50 transition-all duration-300">
             <Music className="text-white/80 w-6 h-6 ml-3" />
