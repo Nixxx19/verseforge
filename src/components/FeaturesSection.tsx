@@ -1,8 +1,8 @@
-import { Music, Headphones, Upload, Edit, Share, Download } from "lucide-react";
+import { Music4, Headphones, Upload, Edit, Share, Download, Copyright, CloudUpload} from "lucide-react";
 
 const features = [
   {
-    icon: Music,
+    icon: Music4,
     title: "10 Free songs daily",
     description: "Turn any moment into music — from your commute to inside jokes. Express what words can't. Free forever, no subscription needed.",
     highlight: "Free daily"
@@ -14,13 +14,13 @@ const features = [
     highlight: "Unlimited"
   },
   {
-    icon: Share,
+    icon: CloudUpload,
     title: "Share it with the world",
     description: "Make music that matters to you, then share it with people who'll feel it too. From your inner circle to millions of music fans, your next track can go far.",
     highlight: "Share globally"
   },
   {
-    icon: Upload,
+    icon: Copyright,
     title: "Create everyday. Keep it all.",
     description: "Make up to 500 songs a month, with full commercial rights on the Pro plan. Get inspired, break genre boundaries, and own what you create—no strings attached.",
     highlight: "Commercial rights"
