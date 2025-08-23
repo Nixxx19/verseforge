@@ -152,7 +152,7 @@ const HeroSection = () => {
           The world's most advanced AI music creation platform. Transform any idea into professional-quality music in seconds.
         </p>
 
-        {/* Prompt Input Box */}
+        {/* Premium Search Input */}
         <div className="max-w-3xl mx-auto mb-12">
           <div className="relative flex items-center gap-4 bg-white/10 backdrop-blur-glass border border-white/30 rounded-2xl p-4 shadow-glass hover:border-white/50 transition-all duration-300">
             <Music className="text-white/80 w-6 h-6 ml-3" />
