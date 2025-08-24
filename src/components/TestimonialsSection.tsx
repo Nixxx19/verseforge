@@ -15,7 +15,7 @@ const TestimonialsSection = () => {
       role: "Grammy-nominated Producer",
       company: "Universal Music",
       avatar: "/1REVIEW.jpg.jpg",
-      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
     },
@@ -24,7 +24,7 @@ const TestimonialsSection = () => {
       role: "Film Composer",
       company: "Netflix",
       avatar: "/2REVIEW.jpg.jpg",
-      content: "From concept to final mix, Suno Pro delivers professional-grade results. I've used it for three major film scores this year.",
+      content: "From concept to final mix, VerseForge delivers professional-grade results. I've used it for three major film scores this year.",
       rating: 5,
       verified: true
     },
@@ -33,7 +33,7 @@ const TestimonialsSection = () => {
       role: "Independent Artist",
       company: "Spotify Top 1%",
       avatar: "/3REVIEW.jpg.jpg",
-      content: "As an indie artist, Suno Pro levels the playing field. My latest album, created entirely with AI assistance, hit #1 on indie charts.",
+      content: "As an indie artist, VerseForge levels the playing field. My latest album, created entirely with AI assistance, hit #1 on indie charts.",
       rating: 5,
       verified: true
     },
@@ -42,7 +42,7 @@ const TestimonialsSection = () => {
       role: "Music Technology Professor",
       company: "Berkeley College of Music",
       avatar: "/4REVIEW.jpg.jpg",
-      content: "The technical precision and creative possibilities are astounding. I'm integrating Suno Pro into our curriculum.",
+      content: "The technical precision and creative possibilities are astounding. I'm integrating VerseForge into our curriculum.",
       rating: 5,
       verified: true
     },
@@ -69,7 +69,7 @@ const TestimonialsSection = () => {
       role: "Grammy-e Producer",
       company: "Universal Music",
       avatar: "/7REVIEW.jpg.jpg",
-      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
     },
@@ -78,7 +78,7 @@ const TestimonialsSection = () => {
       role: "Grammy-nominated Producer",
       company: "e Music",
       avatar: "/8REVIEW.jpg.jpg",
-      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
     },
@@ -87,7 +87,7 @@ const TestimonialsSection = () => {
       role: "Grammy-nee Producer",
       company: "Universal Music",
       avatar: "/9REVIEW.jpg.jpg",
-      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
     }
@@ -141,7 +141,7 @@ const TestimonialsSection = () => {
             </span>
           </h2>
           <p className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed">
-            Join thousands of musicians, producers, and creators who trust Suno Pro for their musical journey
+            Join thousands of musicians, producers, and creators who trust VerseForge for their musical journey
           </p>
         </div>
 
