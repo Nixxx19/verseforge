@@ -11,83 +11,84 @@ const TestimonialsSection = () => {
   
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Grammy-nominated Producer",
-      company: "Universal Music",
+      name: "Arnav Deora",
+      role: "Music Composer",
+      company: "Thapar University",
       avatar: "/1REVIEW.jpg.jpg",
-      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible.",
       rating: 5,
       verified: true
     },
+
     {
-      name: "Marcus Rodriguez",
-      role: "Film Composer",
-      company: "Netflix",
-      avatar: "/2REVIEW.jpg.jpg",
-      content: "From concept to final mix, VerseForge delivers professional-grade results. I've used it for three major film scores this year.",
-      rating: 5,
-      verified: true
-    },
-    {
-      name: "Luna Park",
-      role: "Independent Artist",
-      company: "Spotify Top 1%",
+      name: "Aditi Sood",
+      role: "Groover",
+      company: "Thapar University",
       avatar: "/3REVIEW.jpg.jpg",
       content: "As an indie artist, VerseForge levels the playing field. My latest album, created entirely with AI assistance, hit #1 on indie charts.",
-      rating: 5,
+      rating: 4,
       verified: true
     },
     {
-      name: "Dr. James Wilson",
-      role: "Music Technology Professor",
-      company: "Berkeley College of Music",
+      name: "Krish Kumar",
+      role: "Vibe Curator",
+      company: "Thapar University",
       avatar: "/4REVIEW.jpg.jpg",
       content: "The technical precision and creative possibilities are astounding. I'm integrating VerseForge into our curriculum.",
-      rating: 5,
+      rating: 4,
       verified: true
     },
     {
-      name: "Emma Thompson",
-      role: "Music Director",
-      company: "Broadway Productions",
+      name: "Dhruv Sharma",
+      role: "Beat Boxer",
+      company: "Punjab Engineering College",
+      avatar: "/2REVIEW.jpg.jpg",
+      content: "From concept to final mix, VerseForge delivers professional-grade results. I've used it for three major film scores this year.",
+      rating: 4,
+      verified: true
+    },
+    {
+      name: "Naman Sharma",
+      role: "Sonic Explorer",
+      company: "Thapar University",
       avatar: "/5REVIEW.jpg.jpg",
       content: "For rapid prototyping and creative exploration, nothing comes close. It's become essential for our pre-production process.",
       rating: 5,
       verified: true
     },
     {
-      name: "Alex Kim",
-      role: "Electronic Music Producer",
-      company: "Beatport Top 10",
+      name: "Palak Sharma",
+      role: "Playlist Enthusiast",
+      company: "Delhi Techinical University",
       avatar: "/6REVIEW.jpg.jpg",
-      content: "The electronic music generation capabilities are insane. It understands every subgenre and creates authentic-sounding tracks.",
-      rating: 5,
+      content: "The electronic music generation capabilities are insane. It understands every subgenre and creates authentic tracks.",
+      rating: 4,
       verified: true
     },
     {
-      name: "eee Chen",
-      role: "Grammy-e Producer",
-      company: "Universal Music",
+      name: "Kanav Kumar",
+      role: "Electronic Music Producer",
+      company: "University of Queensland",
       avatar: "/7REVIEW.jpg.jpg",
-      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "VerseForge has transformed my creative process. The AI comprehends musical subtleties with remarkable precision.",
       rating: 5,
       verified: true
     },
     {
-      name: "ee e",
-      role: "Grammy-nominated Producer",
-      company: "e Music",
+      name: "Aryan Malik",
+      role: "Upcoming Music Producer",
+      company: "Thapar University",
       avatar: "/8REVIEW.jpg.jpg",
-      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
-      rating: 5,
+      content: "The AI collaboration is extraordinary. It's like having a brilliant partner available 24/7 for artistic innovation.",
+      rating: 4,
       verified: true
     },
     {
-      name: "Seehen",
-      role: "Grammy-nee Producer",
-      company: "Universal Music",
+      name: "Kashish Mehra",
+      role: "Chill Guy",
+      company: "Thapar University",
       avatar: "/9REVIEW.jpg.jpg",
-      content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      content: "Exceptional for rapid prototyping and creative exploration. Indispensable tool for every music producer.",
       rating: 5,
       verified: true
     }
@@ -123,7 +124,7 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section id="testimonials" className="py-32 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
+    <section id="testimonials" className="py-24 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
@@ -169,13 +170,13 @@ const TestimonialsSection = () => {
           {getCurrentTestimonials().map((testimonial, index) => (
             <Card 
               key={`${currentSlide}-${index}`}
-              className={`group transition-all duration-1000 ease-out hover:scale-105 hover:shadow-glass-hover hover:bg-glass-hover animate-in fade-in-0 ${
+              className={`group transition-all duration-1000 ease-out hover:scale-105 hover:shadow-glass-hover hover:bg-glass-hover animate-in fade-in-0 h-[273px] ${
                 slideDirection === 'left' ? 'slide-in-from-right-8' : 'slide-in-from-left-8'
               }`}
               style={{ animationDelay: `${index * 150}ms` }}
             >
-              <CardContent className="p-8">
-                <div className="flex items-start gap-4 mb-6">
+              <CardContent className="p-6 h-full flex flex-col">
+                <div className="flex items-start gap-4 mb-6 flex-1">
                   <Quote className="w-8 h-8 text-primary flex-shrink-0 mt-1" />
                   <div className="flex-1">
                     <div className="flex items-center gap-1 mb-3">
@@ -189,7 +190,7 @@ const TestimonialsSection = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mt-auto">
                   <Avatar className="w-12 h-12">
                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
                     <AvatarFallback className="bg-gradient-premium text-white font-semibold">
@@ -237,15 +238,15 @@ const TestimonialsSection = () => {
         <div className="text-center mt-16">
           <div className="flex items-center justify-center gap-8 text-muted-foreground">
             <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground mb-1">10M+</div>
+              <div className="font-display text-3xl font-bold text-foreground mb-1">10+</div>
               <div className="text-sm">Songs Created</div>
             </div>
             <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground mb-1">50K+</div>
+              <div className="font-display text-3xl font-bold text-foreground mb-1">20+</div>
               <div className="text-sm">Active Creators</div>
             </div>
             <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground mb-1">99.9%</div>
+              <div className="font-display text-3xl font-bold text-foreground mb-1">98%</div>
               <div className="text-sm">Uptime</div>
             </div>
           </div>

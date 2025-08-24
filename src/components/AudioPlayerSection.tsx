@@ -41,7 +41,7 @@ const AudioPlayerSection = () => {
   const currentSong = tracks[currentTrack];
 
   return (
-    <section id="showcase" className="py-32 bg-background relative overflow-hidden">
+    <section id="showcase" className="py-24 bg-background relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5" />
       
