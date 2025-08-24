@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Menu } from "lucide-react";
+import { Swords, Menu } from "lucide-react";
 
 const Header = () => {
   const scrollToSection = (sectionId: string) => {
@@ -42,7 +42,7 @@ const Header = () => {
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-3 cursor-pointer" onClick={scrollToTop}>
             <div className="w-10 h-10 bg-gradient-premium rounded-xl flex items-center justify-center">
-              <Crown className="w-6 h-6 text-white" />
+              <Swords className="w-6 h-6 text-white" />
             </div>
             <span className="font-display text-2xl font-bold text-foreground">
               VerseForge

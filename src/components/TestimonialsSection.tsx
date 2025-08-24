@@ -2,8 +2,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, Quote } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const TestimonialsSection = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slideDirection, setSlideDirection] = useState('right'); // 'left' or 'right'
+  const [timerKey, setTimerKey] = useState(0); // Key to reset timer
+  
   const testimonials = [
     {
       name: "Sarah Chen",
@@ -58,8 +63,64 @@ const TestimonialsSection = () => {
       content: "The electronic music generation capabilities are insane. It understands every subgenre and creates authentic-sounding tracks.",
       rating: 5,
       verified: true
-    }
+    },
+    {
+      name: "eee Chen",
+      role: "Grammy-e Producer",
+      company: "Universal Music",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      rating: 5,
+      verified: true
+    },
+    {
+      name: "ee e",
+      role: "Grammy-nominated Producer",
+      company: "e Music",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      rating: 5,
+      verified: true
+    },
+    {
+      name: "Seehen",
+      role: "Grammy-nee Producer",
+      company: "Universal Music",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
+      rating: 5,
+      verified: true
+    },
   ];
+
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlideDirection('right');
+      setCurrentSlide((prev) => (prev + 1) % Math.ceil(testimonials.length / 3));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [testimonials.length, timerKey]);
+
+  // Get current 3 testimonials
+  const getCurrentTestimonials = () => {
+    const startIndex = currentSlide * 3;
+    return testimonials.slice(startIndex, startIndex + 3);
+  };
+
+  // Handle navigation with direction and timer reset
+  const handleSlideChange = (direction: 'left' | 'right') => {
+    setSlideDirection(direction);
+    if (direction === 'right') {
+      setCurrentSlide((prev) => (prev + 1) % Math.ceil(testimonials.length / 3));
+    } else {
+      setCurrentSlide((prev) => (prev - 1 + Math.ceil(testimonials.length / 3)) % Math.ceil(testimonials.length / 3));
+    }
+    
+    // Reset the auto-slide timer
+    setTimerKey(prev => prev + 1);
+  };
 
   return (
     <section id="testimonials" className="py-32 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
@@ -73,7 +134,7 @@ const TestimonialsSection = () => {
             Trusted by Professionals
           </Badge>
           <h2 className="font-display text-5xl md:text-7xl font-bold text-foreground mb-6">
-            What Creators
+            What Users
             <br />
             <span className="bg-gradient-warm bg-clip-text text-transparent relative isolate bg-background">
               Are Saying
@@ -84,11 +145,34 @@ const TestimonialsSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {testimonials.map((testimonial, index) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto relative">
+          {/* Left Arrow */}
+          <button
+            onClick={() => handleSlideChange('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-500 ease-out group"
+          >
+            <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => handleSlideChange('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-500 ease-out group"
+          >
+            <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {getCurrentTestimonials().map((testimonial, index) => (
             <Card 
-              key={index}
-              className="group transition-all duration-500 hover:scale-105 hover:shadow-glass-hover hover:bg-glass-hover"
+              key={`${currentSlide}-${index}`}
+              className={`group transition-all duration-1000 ease-out hover:scale-105 hover:shadow-glass-hover hover:bg-glass-hover animate-in fade-in-0 ${
+                slideDirection === 'left' ? 'slide-in-from-right-8' : 'slide-in-from-left-8'
+              }`}
+              style={{ animationDelay: `${index * 150}ms` }}
             >
               <CardContent className="p-8">
                 <div className="flex items-start gap-4 mb-6">
@@ -134,6 +218,19 @@ const TestimonialsSection = () => {
                 </div>
               </CardContent>
             </Card>
+          ))}
+        </div>
+
+        {/* Slide indicators */}
+        <div className="flex justify-center gap-2 mt-8">
+          {[...Array(Math.ceil(testimonials.length / 3))].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide ? 'bg-primary' : 'bg-muted-foreground/30'
+              }`}
+            />
           ))}
         </div>
 

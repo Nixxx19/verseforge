@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Music } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Music, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 const HeroSection = () => {
   const prompts = [
@@ -20,6 +20,116 @@ const HeroSection = () => {
     { genre: "Doja Cat", text: "Fun And Playful" },
     { genre: "Bad Bunny", text: "Latin Rhythms" }
   ];
+
+  // Suggestion system state
+  const [inputValue, setInputValue] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Generate suggestions based on input
+  const generateSuggestions = (input: string) => {
+    if (!input.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    // Show all suggestions at once instead of filtering
+    const allSuggestions: string[] = [];
+
+    // Add artist suggestions
+    prompts.forEach(prompt => {
+      allSuggestions.push(`${prompt.genre} song about ${prompt.text}`);
+    });
+
+    // Add genre suggestions
+    const genres = ["Hip Hop", "Pop", "R&B", "Rock", "Electronic", "Jazz", "Country", "Latin", "Indie", "Alternative"];
+    genres.forEach(genre => {
+      allSuggestions.push(`${genre} song`);
+    });
+
+    // Add mood/theme suggestions
+    const themes = ["love", "heartbreak", "party", "chill", "energetic", "melancholy", "uplifting", "dark", "romantic", "nostalgic"];
+    themes.forEach(theme => {
+      allSuggestions.push(`${theme} song`);
+    });
+
+    // Add instrument suggestions
+    const instruments = ["piano", "guitar", "drums", "synth", "strings", "brass", "acoustic", "electric"];
+    instruments.forEach(instrument => {
+      allSuggestions.push(`${instrument} song`);
+    });
+
+    // Show all suggestions
+    setSuggestions(allSuggestions);
+    setShowSuggestions(true);
+    setSelectedSuggestionIndex(-1);
+  };
+
+  // Handle input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    generateSuggestions(value);
+  };
+
+  // Handle suggestion selection
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions) return;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (selectedSuggestionIndex >= 0) {
+          handleSuggestionClick(suggestions[selectedSuggestionIndex]);
+        }
+        break;
+      case "Escape":
+        setShowSuggestions(false);
+        setSelectedSuggestionIndex(-1);
+        break;
+    }
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current && 
+        !inputRef.current.contains(event.target as Node) &&
+        suggestionsRef.current && 
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+        setSelectedSuggestionIndex(-1);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
@@ -153,10 +263,14 @@ const HeroSection = () => {
         </p>
 
         {/* Premium Search Input */}
-        <div className="max-w-3xl mx-auto mb-12">
+        <div className="max-w-3xl mx-auto mb-12 relative">
           <div className="relative flex items-center gap-4 bg-white/10 backdrop-blur-glass border border-white/30 rounded-2xl p-4 shadow-glass hover:border-white/50 transition-all duration-300">
             <Music className="text-white/80 w-6 h-6 ml-3" />
             <Input 
+              ref={inputRef}
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               placeholder="Describe your musical vision..."
               className="flex-1 bg-transparent border-none text-white placeholder:text-white/70 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl font-light"
             />
@@ -164,6 +278,29 @@ const HeroSection = () => {
               Generate
             </Button>
           </div>
+
+          {/* Suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div 
+              ref={suggestionsRef}
+              className="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-glass overflow-hidden z-50 max-h-36 overflow-y-auto"
+            >
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className={`px-4 py-3.5 cursor-pointer transition-all duration-200 hover:bg-white/10 ${
+                    index === selectedSuggestionIndex ? 'bg-white/15' : ''
+                  } ${index < suggestions.length - 1 ? 'border-b border-white/10' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Music className="w-4 h-4 text-white/60" />
+                    <span className="text-white/90 text-sm font-medium">{suggestion}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           
           <div className="flex items-center justify-center gap-6 mt-8 text-white/60 text-sm">
             <span className="flex items-center gap-2">
