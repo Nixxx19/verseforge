@@ -14,7 +14,7 @@ const TestimonialsSection = () => {
       name: "Sarah Chen",
       role: "Grammy-nominated Producer",
       company: "Universal Music",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/1REVIEW.jpg.jpg",
       content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
@@ -23,7 +23,7 @@ const TestimonialsSection = () => {
       name: "Marcus Rodriguez",
       role: "Film Composer",
       company: "Netflix",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/2REVIEW.jpg.jpg",
       content: "From concept to final mix, Suno Pro delivers professional-grade results. I've used it for three major film scores this year.",
       rating: 5,
       verified: true
@@ -32,7 +32,7 @@ const TestimonialsSection = () => {
       name: "Luna Park",
       role: "Independent Artist",
       company: "Spotify Top 1%",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/3REVIEW.jpg.jpg",
       content: "As an indie artist, Suno Pro levels the playing field. My latest album, created entirely with AI assistance, hit #1 on indie charts.",
       rating: 5,
       verified: true
@@ -41,7 +41,7 @@ const TestimonialsSection = () => {
       name: "Dr. James Wilson",
       role: "Music Technology Professor",
       company: "Berkeley College of Music",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/4REVIEW.jpg.jpg",
       content: "The technical precision and creative possibilities are astounding. I'm integrating Suno Pro into our curriculum.",
       rating: 5,
       verified: true
@@ -50,7 +50,7 @@ const TestimonialsSection = () => {
       name: "Emma Thompson",
       role: "Music Director",
       company: "Broadway Productions",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/5REVIEW.jpg.jpg",
       content: "For rapid prototyping and creative exploration, nothing comes close. It's become essential for our pre-production process.",
       rating: 5,
       verified: true
@@ -59,7 +59,7 @@ const TestimonialsSection = () => {
       name: "Alex Kim",
       role: "Electronic Music Producer",
       company: "Beatport Top 10",
-      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/6REVIEW.jpg.jpg",
       content: "The electronic music generation capabilities are insane. It understands every subgenre and creates authentic-sounding tracks.",
       rating: 5,
       verified: true
@@ -68,7 +68,7 @@ const TestimonialsSection = () => {
       name: "eee Chen",
       role: "Grammy-e Producer",
       company: "Universal Music",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/7REVIEW.jpg.jpg",
       content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
@@ -77,7 +77,7 @@ const TestimonialsSection = () => {
       name: "ee e",
       role: "Grammy-nominated Producer",
       company: "e Music",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/8REVIEW.jpg.jpg",
       content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
@@ -86,11 +86,11 @@ const TestimonialsSection = () => {
       name: "Seehen",
       role: "Grammy-nee Producer",
       company: "Universal Music",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      avatar: "/src/assets/9REVIEW.jpg.jpg",
       content: "Suno Pro has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible. It's like having a genius collaborator 24/7.",
       rating: 5,
       verified: true
-    },
+    }
   ];
 
   // Auto-slide every 5 seconds
