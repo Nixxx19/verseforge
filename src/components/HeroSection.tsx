@@ -242,7 +242,7 @@ const HeroSection = () => {
 
       {/* Main content */}
       <div className="container mx-auto px-12 text-center relative z-10">
-        <div className="h-48 flex items-center justify-center mb-8">
+        <div className="h-48 flex items-center justify-center mb-9">
           <h1 className="font-sans text-6xl md:text-[79px] font-bold text-white leading-tight max-w-6xl mx-auto">
             {showInitialPrompt ? (
               <>
