@@ -236,7 +236,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="min-h-screen bg-gradient-hero relative overflow-hidden flex items-center justify-center pt-16">
+    <section className="min-h-screen bg-gradient-hero relative overflow-hidden flex items-center justify-center pt-14">
       {/* Background decorative elements */}
       <div className="absolute inset-0 bg-black/20" />
 

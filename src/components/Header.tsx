@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Swords, Menu } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import SignInDialog from "./SignInDialog";
+import UserProfileDropdown from "./UserProfileDropdown";
 
 const Header = () => {
+  const { user, isAuthenticated, signIn, signOut } = useAuth();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -52,42 +59,156 @@ const Header = () => {
           <nav className="hidden lg:flex items-center gap-8">
             <button 
               onClick={() => scrollToSection('features')} 
-              className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
+              className="text-foreground font-medium cursor-pointer px-3 py-1 relative transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-0"
+              onMouseEnter={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '80%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '0 4px 12px -2px rgba(102, 126, 234, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '0%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '';
+                }
+              }}
             >
               Features
+              <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
             </button>
             <button 
               onClick={() => scrollToSection('showcase')} 
-              className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
+              className="text-foreground font-medium cursor-pointer px-3 py-1 relative transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-0"
+              onMouseEnter={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '82%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '0 4px 12px -2px rgba(102, 126, 234, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '0%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '';
+                }
+              }}
             >
               Showcase
+              <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
             </button>
             <button 
               onClick={() => scrollToSection('testimonials')} 
-              className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
+              className="text-foreground font-medium cursor-pointer px-3 py-1 relative transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-0"
+              onMouseEnter={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '80%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '0 4px 12px -2px rgba(102, 126, 234, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '0%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '';
+                }
+              }}
             >
               Reviews
+              <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
             </button>
             <button 
               onClick={() => scrollToSection('my-songs')} 
-              className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
+              className="text-foreground font-medium cursor-pointer px-3 py-1 relative transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-0"
+              onMouseEnter={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '83%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '0 4px 12px -2px rgba(102, 126, 234, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                const button = e.currentTarget;
+                const underline = button.querySelector('.underline') as HTMLElement;
+                if (underline) {
+                  underline.style.width = '0%';
+                  underline.style.left = '50%';
+                  underline.style.boxShadow = '';
+                }
+              }}
             >
               My Songs
+              <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
             </button>
           </nav>
         </div>
         
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden sm:inline-flex text-foreground font-medium">
-            Sign In
-          </Button>
-          <Button variant="create" size="lg" className="font-semibold px-6" onClick={scrollToCreate}>
+          {isAuthenticated && user ? (
+            <UserProfileDropdown user={user} onSignOut={signOut} />
+          ) : (
+            <Button 
+              variant="ghost" 
+              className="hidden sm:inline-flex text-white font-medium px-3.5 h-11 border border-white/10 backdrop-blur-sm transition-all duration-300 rounded-md focus:outline-none focus:ring-0 focus-visible:ring-0"
+              onClick={() => setIsSignInDialogOpen(true)}
+              onMouseEnter={(e) => {
+                const button = e.currentTarget;
+                button.style.borderColor = '#667eea';
+                button.style.background = 'transparent';
+              }}
+              onMouseLeave={(e) => {
+                const button = e.currentTarget;
+                button.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                button.style.background = 'transparent';
+              }}
+            >
+              Sign In
+            </Button>
+          )}
+          <Button 
+            variant="ghost" 
+            className="font-semibold px-3.5 h-11 border border-white/10 backdrop-blur-sm transition-all duration-300 rounded-md focus:outline-none focus:ring-0 focus-visible:ring-0 text-white" 
+            onClick={scrollToCreate}
+            onMouseEnter={(e) => {
+              const button = e.currentTarget;
+              button.style.borderColor = '#667eea';
+              button.style.background = 'transparent';
+            }}
+            onMouseLeave={(e) => {
+              const button = e.currentTarget;
+              button.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              button.style.background = 'transparent';
+            }}
+          >
             Start Creating
           </Button>
           <Button variant="ghost" size="icon" className="lg:hidden">
             <Menu className="w-5 h-5" />
           </Button>
         </div>
+
+        <SignInDialog 
+          isOpen={isSignInDialogOpen}
+          onClose={() => setIsSignInDialogOpen(false)}
+          onSignIn={signIn}
+        />
       </div>
     </header>
   );
