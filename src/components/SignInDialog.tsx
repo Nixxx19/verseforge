@@ -19,7 +19,7 @@ const GoogleLogo = () => (
 interface SignInDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSignIn: (email: string, method: 'email' | 'google' | 'github' | 'apple') => void;
+  onSignIn: (email: string, method: 'email' | 'google' | 'github' | 'apple', firstName?: string, lastName?: string) => void;
 }
 
 const SignInDialog = ({ isOpen, onClose, onSignIn }: SignInDialogProps) => {
@@ -39,7 +39,7 @@ const SignInDialog = ({ isOpen, onClose, onSignIn }: SignInDialogProps) => {
   const handleSignUpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim() && firstName.trim() && lastName.trim()) {
-      onSignIn(email, 'email');
+      onSignIn(email, 'email', firstName, lastName);
       onClose();
     }
   };

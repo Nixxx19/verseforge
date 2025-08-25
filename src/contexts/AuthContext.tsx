@@ -4,13 +4,13 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
-  signInMethod: 'email' | 'google' | 'github' | 'apple';
+  signInMethod: 'email' | 'google';
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signIn: (email: string, method: 'email' | 'google' | 'github' | 'apple') => void;
+  signIn: (email: string, method: 'email' | 'google', firstName?: string, lastName?: string) => void;
   signOut: () => void;
 }
 
@@ -31,11 +31,19 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const signIn = (email: string, method: 'email' | 'google' | 'github' | 'apple') => {
+  const signIn = (email: string, method: 'email' | 'google', firstName?: string, lastName?: string) => {
     // In a real app, this would handle actual authentication
     // For demo purposes, we'll create a mock user
+    let userName = 'User';
+    
+    if (method === 'email' && firstName && lastName) {
+      userName = `${firstName} ${lastName}`;
+    } else if (method === 'google') {
+      userName = 'NITYAM';
+    }
+    
     const mockUser: User = {
-      name: method === 'email' ? 'User' : 'NITYAM',
+      name: userName,
       email: email || 'nixxspeaks@gmail.com',
       signInMethod: method,
     };
