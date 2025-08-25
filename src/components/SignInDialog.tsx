@@ -56,7 +56,7 @@ const SignInDialog = ({ isOpen, onClose, onSignIn }: SignInDialogProps) => {
           <div className="w-12 h-12 bg-gradient-premium rounded-xl flex items-center justify-center mx-auto">
             <Swords className="w-6 h-6 text-white" />
           </div>
-          <DialogTitle className="text-2xl font-display font-bold text-foreground">
+          <DialogTitle className="text-2xl font-['Inter'] font-bold text-foreground">
             {isSignUp ? "Sign up" : "Sign in"}
           </DialogTitle>
         </DialogHeader>

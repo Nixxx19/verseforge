@@ -126,7 +126,6 @@ const UserProfileDropdown = ({ user, onSignOut }: UserProfileDropdownProps) => {
           <LogOut className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-red-400" />
           <span className="text-sm font-medium text-foreground group-hover:text-red-400 flex items-center">
             Log Out
-            <span className="ml-auto text-xs">⌘⇧Q</span>
           </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
