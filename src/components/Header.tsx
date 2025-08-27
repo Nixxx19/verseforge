@@ -1,14 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Swords, Menu } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useUser } from '@clerk/clerk-react';
 import SignInDialog from "./SignInDialog";
 import UserProfileDropdown from "./UserProfileDropdown";
 
 const Header = () => {
-  const { user, isAuthenticated, signIn, signOut } = useAuth();
+  const { isSignedIn, isLoaded, user } = useUser();
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
+  const [tempUserEmail, setTempUserEmail] = useState<string | null>(null);
+
+  // Update user profile visibility when authentication state changes
+  useEffect(() => {
+    console.log("Header - Auth state changed:", { isSignedIn, isLoaded, hasUser: !!user });
+    if (isLoaded) {
+      const shouldShowProfile = isSignedIn && !!user;
+      setShowUserProfile(shouldShowProfile);
+      console.log("Header - Setting showUserProfile to:", shouldShowProfile);
+      
+      // Clear temporary email when real user data is loaded
+      if (user && tempUserEmail) {
+        setTempUserEmail(null);
+      }
+    }
+  }, [isSignedIn, isLoaded, user, tempUserEmail]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -41,6 +58,32 @@ const Header = () => {
         behavior: 'smooth'
       });
     }
+  };
+
+  // Force refresh when dialog closes
+  const handleSignInDialogClose = () => {
+    console.log("Header - Sign in dialog closed");
+    setIsSignInDialogOpen(false);
+    // Force a small delay to ensure Clerk state is updated
+    setTimeout(() => {
+      console.log("Header - Checking auth state after dialog close:", { isSignedIn, isLoaded });
+    }, 100);
+  };
+
+  // Handle successful authentication
+  const handleAuthSuccess = (email?: string) => {
+    console.log("Header - Authentication attempt started, showing user profile immediately");
+    setIsSignInDialogOpen(false);
+    // Set temporary user email for immediate visual feedback
+    if (email) {
+      setTempUserEmail(email);
+    }
+    // Immediately show user profile when OTP is submitted
+    setShowUserProfile(true);
+    // Force immediate state check
+    setTimeout(() => {
+      console.log("Header - Auth success - checking state:", { isSignedIn, isLoaded, hasUser: !!user });
+    }, 50);
   };
 
   return (
@@ -161,8 +204,8 @@ const Header = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          {isAuthenticated && user ? (
-            <UserProfileDropdown user={user} onSignOut={signOut} />
+          {isLoaded && showUserProfile ? (
+            <UserProfileDropdown tempEmail={tempUserEmail} />
           ) : (
             <Button 
               variant="ghost" 
@@ -206,8 +249,8 @@ const Header = () => {
 
         <SignInDialog 
           isOpen={isSignInDialogOpen}
-          onClose={() => setIsSignInDialogOpen(false)}
-          onSignIn={signIn}
+          onClose={handleSignInDialogClose}
+          onAuthSuccess={handleAuthSuccess}
         />
       </div>
     </header>
