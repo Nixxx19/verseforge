@@ -4,9 +4,7 @@ const StatisticsSection = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="py-16 bg-background relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5" />
+    <section className="py-4 bg-background relative overflow-hidden">
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center">

@@ -226,7 +226,7 @@ const AudioPlayerSection = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-8">
-          <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-4 text-sm font-medium">
+          <Badge className="bg-gradient-premium text-white border-0 px-6 py-2 mb-4 text-sm font-medium">
             Listen & Experience
           </Badge>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-4">
