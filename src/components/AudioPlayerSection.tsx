@@ -2,48 +2,138 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, SkipBack, SkipForward, Volume2, Heart, Share2, Download } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const AudioPlayerSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const tracks = [
     {
-      title: "Midnight Dreams",
-      artist: "AI Composer",
-      genre: "Ambient Electronic",
-      duration: "3:42",
+      title: "Ocean Waves",
+      artist: "Frank Ocean",
+      genre: "R&B",
+      duration: "0:00",
       likes: 2847,
-      description: "A dreamy ambient piece created from the prompt 'peaceful night in the forest'",
+      description: "A dreamy R&B piece inspired by ocean waves and coastal vibes",
+      audioFile: "/audio/frank.mp3",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
-      title: "Urban Pulse",
-      artist: "Beat Generator",
-      genre: "Hip Hop",
-      duration: "2:58",
+      title: "Storytelling",
+      artist: "Taylor Swift",
+      genre: "Pop",
+      duration: "0:00",
       likes: 4521,
-      description: "High-energy hip hop track generated from 'city lights and late night energy'",
+      description: "Emotional pop ballad with heartfelt storytelling and melodic hooks",
+      audioFile: "/audio/taylorswift.mp3",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
-      title: "Acoustic Soul",
-      artist: "String Theory AI",
-      genre: "Folk Acoustic",
-      duration: "4:15",
+      title: "Late Night Energy",
+      artist: "Travis Scott",
+      genre: "Hip Hop",
+      duration: "0:00",
       likes: 1893,
-      description: "Warm acoustic guitar melody inspired by 'coffee shop on a rainy day'",
+      description: "High-energy hip hop track with atmospheric beats and autotune vocals",
+      audioFile: "/audio/travis.mp3",
+      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
+    },
+    {
+      title: "Midnight Vibes",
+      artist: "Drake",
+      genre: "Hip Hop/R&B",
+      duration: "0:00",
+      likes: 3200,
+      description: "Smooth hip hop and R&B fusion perfect for late night listening",
+      audioFile: "/audio/drake.mp3",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     }
   ];
 
   const currentSong = tracks[currentTrack];
 
+  // Handle play/pause
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  // Handle track change
+  const changeTrack = (index: number) => {
+    setCurrentTrack(index);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  // Handle next/previous track
+  const nextTrack = () => {
+    const nextIndex = (currentTrack + 1) % tracks.length;
+    changeTrack(nextIndex);
+  };
+
+  const prevTrack = () => {
+    const prevIndex = currentTrack === 0 ? tracks.length - 1 : currentTrack - 1;
+    changeTrack(prevIndex);
+  };
+
+  // Audio event handlers
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleEnded = () => {
+    nextTrack();
+  };
+
+  // Update duration display when track changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  }, [currentTrack]);
+
+  // Format time display
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   return (
     <section id="showcase" className="py-24 bg-background relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5" />
+      
+      {/* Hidden audio element */}
+      <audio
+        ref={audioRef}
+        src={currentSong.audioFile}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleEnded}
+        preload="metadata"
+      />
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-20">
@@ -119,7 +209,7 @@ const AudioPlayerSection = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentTrack(Math.max(0, currentTrack - 1))}
+                      onClick={prevTrack}
                       className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
                     >
                       <SkipBack className="w-6 h-6" />
@@ -128,7 +218,7 @@ const AudioPlayerSection = () => {
                     <Button
                       variant="create"
                       size="icon"
-                      onClick={() => setIsPlaying(!isPlaying)}
+                      onClick={togglePlay}
                       className="w-20 h-20 rounded-full shadow-glow hover:scale-110 transition-all duration-300 backdrop-blur-sm"
                     >
                       {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
@@ -137,7 +227,7 @@ const AudioPlayerSection = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setCurrentTrack(Math.min(tracks.length - 1, currentTrack + 1))}
+                      onClick={nextTrack}
                       className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
                     >
                       <SkipForward className="w-6 h-6" />
@@ -162,7 +252,7 @@ const AudioPlayerSection = () => {
                 </div>
 
                 <div className="text-sm text-muted-foreground font-medium">
-                  0:00 / {currentSong.duration}
+                  {formatTime(currentTime)} / {formatTime(duration)}
                 </div>
               </div>
             </div>
@@ -178,7 +268,7 @@ const AudioPlayerSection = () => {
                     ? 'bg-glass-card border-primary/30 shadow-glow' 
                     : 'bg-glass-card/50 hover:bg-glass-card border-white/5'
                 } border rounded-2xl p-6 backdrop-blur-xl`}
-                onClick={() => setCurrentTrack(index)}
+                onClick={() => changeTrack(index)}
               >
                 <div className="flex items-center gap-6">
                   <div className="w-16 h-16 bg-gradient-premium rounded-2xl flex items-center justify-center shadow-premium">
@@ -191,7 +281,7 @@ const AudioPlayerSection = () => {
                   </div>
                   
                   <div className="text-right">
-                    <div className="text-base text-muted-foreground font-medium">{track.duration}</div>
+                    <div className="text-base text-muted-foreground font-medium">{formatTime(duration)}</div>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                       <Heart className="w-4 h-4" />
                       {track.likes.toLocaleString()}

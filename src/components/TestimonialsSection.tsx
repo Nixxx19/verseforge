@@ -14,7 +14,7 @@ const TestimonialsSection = () => {
       name: "Arnav Deora",
       role: "Music Composer",
       company: "Thapar University",
-      avatar: "/1REVIEW.jpg.jpg",
+      avatar: "Reviews/1REVIEW.jpg.jpg",
       content: "VerseForge has revolutionized my workflow. The AI understands musical nuance in ways I never thought possible.",
       rating: 5,
       verified: true
@@ -24,7 +24,7 @@ const TestimonialsSection = () => {
       name: "Aditi Sood",
       role: "Groover",
       company: "Thapar University",
-      avatar: "/3REVIEW.jpg.jpg",
+      avatar: "Reviews/3REVIEW.jpg.jpg",
       content: "As an indie artist, VerseForge levels the playing field. My latest album, created entirely with AI assistance, hit #1 on indie charts.",
       rating: 4,
       verified: true
@@ -33,7 +33,7 @@ const TestimonialsSection = () => {
       name: "Krish Kumar",
       role: "Vibe Curator",
       company: "Thapar University",
-      avatar: "/4REVIEW.jpg.jpg",
+      avatar: "Reviews/4REVIEW.jpg.jpg",
       content: "The technical precision and creative possibilities are astounding. I'm integrating VerseForge into our curriculum.",
       rating: 4,
       verified: true
@@ -42,7 +42,7 @@ const TestimonialsSection = () => {
       name: "Dhruv Sharma",
       role: "Beat Boxer",
       company: "Punjab Engineering College",
-      avatar: "/2REVIEW.jpg.jpg",
+      avatar: "Reviews/2REVIEW.jpg.jpg",
       content: "From concept to final mix, VerseForge delivers professional-grade results. I've used it for three major film scores this year.",
       rating: 4,
       verified: true
@@ -51,7 +51,7 @@ const TestimonialsSection = () => {
       name: "Naman Sharma",
       role: "Sonic Explorer",
       company: "Thapar University",
-      avatar: "/5REVIEW.jpg.jpg",
+      avatar: "Reviews/5REVIEW.jpg.jpg",
       content: "For rapid prototyping and creative exploration, nothing comes close. It's become essential for our pre-production process.",
       rating: 5,
       verified: true
@@ -60,7 +60,7 @@ const TestimonialsSection = () => {
       name: "Palak Sharma",
       role: "Playlist Enthusiast",
       company: "Delhi Techinical University",
-      avatar: "/6REVIEW.jpg.jpg",
+      avatar: "Reviews/6REVIEW.jpg.jpg",
       content: "The electronic music generation capabilities are insane. It understands every subgenre and creates authentic tracks.",
       rating: 4,
       verified: true
@@ -69,7 +69,7 @@ const TestimonialsSection = () => {
       name: "Kanav Kumar",
       role: "Electronic Music Producer",
       company: "University of Queensland",
-      avatar: "/7REVIEW.jpg.jpg",
+      avatar: "Reviews/7REVIEW.jpg.jpg",
       content: "VerseForge has transformed my creative process. The AI comprehends musical subtleties with remarkable precision.",
       rating: 5,
       verified: true
@@ -78,7 +78,7 @@ const TestimonialsSection = () => {
       name: "Aryan Malik",
       role: "Upcoming Music Producer",
       company: "Thapar University",
-      avatar: "/8REVIEW.jpg.jpg",
+      avatar: "Reviews/8REVIEW.jpg.jpg",
       content: "The AI collaboration is extraordinary. It's like having a brilliant partner available 24/7 for artistic innovation.",
       rating: 4,
       verified: true
@@ -87,7 +87,7 @@ const TestimonialsSection = () => {
       name: "Kashish Mehra",
       role: "Chill Guy",
       company: "Thapar University",
-      avatar: "/9REVIEW.jpg.jpg",
+      avatar: "Reviews/9REVIEW.jpg.jpg",
       content: "Exceptional for rapid prototyping and creative exploration. Indispensable tool for every music producer.",
       rating: 5,
       verified: true
