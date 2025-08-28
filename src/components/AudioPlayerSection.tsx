@@ -20,6 +20,7 @@ const AudioPlayerSection = () => {
       likes: 2847,
       description: "A dreamy R&B piece inspired by ocean waves and coastal vibes",
       audioFile: "/audio/frank.mp3",
+      albumCover: "/covers/frank.jpeg",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
@@ -33,6 +34,16 @@ const AudioPlayerSection = () => {
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
+      title: "Nothing But Wins",
+      artist: "Drake",
+      genre: "Hip Hop/R&B",
+      duration: "0:00",
+      likes: 3200,
+      description: "Smooth hip hop and R&B fusion perfect for late night listening",
+      audioFile: "/audio/Drake1.mp3",
+      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
+    },
+    {
       title: "Late Night Energy",
       artist: "Travis Scott",
       genre: "Hip Hop",
@@ -40,16 +51,7 @@ const AudioPlayerSection = () => {
       likes: 1893,
       description: "High-energy hip hop track with atmospheric beats and autotune vocals",
       audioFile: "/audio/travis.mp3",
-      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
-    },
-    {
-      title: "Midnight Vibes",
-      artist: "Drake",
-      genre: "Hip Hop/R&B",
-      duration: "0:00",
-      likes: 3200,
-      description: "Smooth hip hop and R&B fusion perfect for late night listening",
-      audioFile: "/audio/Drake1.mp3",
+      albumCover: "/covers/travis.jpeg",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     }
   ];
@@ -159,9 +161,13 @@ const AudioPlayerSection = () => {
               {/* Album Art */}
               <div className="relative flex-shrink-0">
                 <div className="w-72 h-72 bg-gradient-hero rounded-3xl flex items-center justify-center shadow-glow mx-auto lg:mx-0 overflow-hidden">
-                  <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <div className="w-12 h-12 bg-white rounded-full animate-pulse" />
-                  </div>
+                  {currentSong.albumCover ? (
+                    <img src={currentSong.albumCover} alt={currentSong.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <div className="w-12 h-12 bg-white rounded-full animate-pulse" />
+                    </div>
+                  )}
                 </div>
                 <Badge className="absolute -top-3 -right-3 bg-gradient-premium text-white border-0 px-4 py-1 rounded-full shadow-premium">
                   AI Generated
@@ -201,6 +207,20 @@ const AudioPlayerSection = () => {
                       }}
                     />
                   ))}
+                </div>
+
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-create rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
                 </div>
 
                 {/* Premium Controls */}
