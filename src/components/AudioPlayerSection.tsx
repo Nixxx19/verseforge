@@ -24,7 +24,7 @@ const AudioPlayerSection = () => {
       description: "A dreamy R&B piece inspired by ocean waves and coastal vibes",
       audioFile: "/audio/frank.mp3",
       albumCover: "/covers/frank.jpeg",
-      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
     },
     {
       title: "Half of Me",
@@ -35,7 +35,7 @@ const AudioPlayerSection = () => {
       description: "Emotional pop ballad with heartfelt storytelling and melodic hooks",
       audioFile: "/audio/taylorswift.mp3",
       albumCover: "/covers/taylor_cover.jpg",
-      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
     },
     {
       title: "Nothing But Wins",
@@ -46,7 +46,7 @@ const AudioPlayerSection = () => {
       description: "Smooth hip hop and R&B fusion perfect for late night listening",
       audioFile: "/audio/Drake1.mp3",
       albumCover: "/covers/drake_cover.jpg",
-      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
     },
     {
       title: "Ride With You",
@@ -57,7 +57,7 @@ const AudioPlayerSection = () => {
       description: "High-energy hip hop track with atmospheric beats and autotune vocals",
       audioFile: "/audio/travis.mp3",
       albumCover: "/covers/travis.jpeg",
-      waveform: Array.from({ length: 40 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
     }
   ];
 
@@ -206,7 +206,7 @@ const AudioPlayerSection = () => {
               const prevTrack = (currentTrack - 1 + tracks.length) % tracks.length;
               changeTrack(prevTrack);
             }}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-14 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
           >
             <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -219,7 +219,7 @@ const AudioPlayerSection = () => {
               const nextTrack = (currentTrack + 1) % tracks.length;
               changeTrack(nextTrack);
             }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-14 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
           >
             <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -227,11 +227,11 @@ const AudioPlayerSection = () => {
           </button>
 
           {/* Main Player - Apple Music Style */}
-          <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-glass hover:shadow-glass-hover transition-all duration-500">
+          <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500">
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-64 h-64 bg-gradient-hero rounded-3xl flex items-center justify-center shadow-glow mx-auto lg:mx-0 overflow-hidden">
+                <div className="w-72 h-[328px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
                   {currentSong.albumCover ? (
                     <img src={currentSong.albumCover} alt={currentSong.title} className="w-full h-full object-cover" />
                   ) : (
@@ -264,7 +264,7 @@ const AudioPlayerSection = () => {
                 </p>
 
                 {/* Enhanced Waveform */}
-                <div className="flex items-end gap-1.5 h-16 bg-white/5 rounded-2xl p-4 backdrop-blur-sm">
+                <div className="flex items-end gap-1 h-16 bg-white/5 rounded-2xl p-4 backdrop-blur-sm overflow-hidden">
                   {currentSong.waveform.map((height, index) => (
                     <div
                       key={index}
@@ -273,12 +273,15 @@ const AudioPlayerSection = () => {
                       }`}
                       style={{
                         height: `${height}%`,
-                        width: '6px',
+                        width: '4px',
                         opacity: index < 15 ? 0.9 : 0.4
                       }}
                     />
                   ))}
                 </div>
+
+                {/* Spacer */}
+                <div className="h-[0.1px]"></div>
 
                 {/* Progress Bar */}
                 <div className="space-y-2">
