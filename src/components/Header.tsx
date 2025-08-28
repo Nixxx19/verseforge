@@ -30,8 +30,15 @@ const Header = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerHeight = 10; // Height of the fixed header
-      const elementPosition = element.offsetTop - headerHeight; // Extra 20px offset
+      const headerHeight = 80; // Height of the fixed header (h-20 = 80px)
+      let extraOffset = -25; // Default negative offset to scroll further into the section
+      
+      // Special case for showcase - scroll even further down
+      if (sectionId === 'showcase') {
+        extraOffset = -60; // Much more negative offset for showcase
+      }
+      
+      const elementPosition = element.offsetTop - headerHeight - extraOffset;
       
       window.scrollTo({
         top: elementPosition,

@@ -9,11 +9,14 @@ const AudioPlayerSection = () => {
   const [currentTrack, setCurrentTrack] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slideDirection, setSlideDirection] = useState('right');
+  const [timerKey, setTimerKey] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const tracks = [
     {
-      title: "Ocean Waves",
+      title: "Blue Hours",
       artist: "Frank Ocean",
       genre: "R&B",
       duration: "0:00",
@@ -24,13 +27,14 @@ const AudioPlayerSection = () => {
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
-      title: "Storytelling",
+      title: "Half of Me",
       artist: "Taylor Swift",
       genre: "Pop",
       duration: "0:00",
       likes: 4521,
       description: "Emotional pop ballad with heartfelt storytelling and melodic hooks",
       audioFile: "/audio/taylorswift.mp3",
+      albumCover: "/covers/taylor_cover.jpg",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
@@ -41,10 +45,11 @@ const AudioPlayerSection = () => {
       likes: 3200,
       description: "Smooth hip hop and R&B fusion perfect for late night listening",
       audioFile: "/audio/Drake1.mp3",
+      albumCover: "/covers/drake_cover.jpg",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     },
     {
-      title: "Late Night Energy",
+      title: "Ride With You",
       artist: "Travis Scott",
       genre: "Hip Hop",
       duration: "0:00",
@@ -115,6 +120,46 @@ const AudioPlayerSection = () => {
     }
   }, [currentTrack]);
 
+  // Auto-slide main player every 6 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isPlaying) {
+        const nextTrack = (currentTrack + 1) % tracks.length;
+        changeTrack(nextTrack);
+      }
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [currentTrack, isPlaying, tracks.length]);
+
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlideDirection('right');
+      setCurrentSlide((prev) => (prev + 1) % tracks.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [tracks.length, timerKey]);
+
+  // Get current song
+  const getCurrentSong = () => {
+    return tracks[currentSlide];
+  };
+
+  // Handle navigation with direction and timer reset
+  const handleSlideChange = (direction: 'left' | 'right') => {
+    setSlideDirection(direction);
+    if (direction === 'right') {
+      setCurrentSlide((prev) => (prev + 1) % tracks.length);
+    } else {
+      setCurrentSlide((prev) => (prev - 1 + tracks.length) % tracks.length);
+    }
+    
+    // Reset the auto-slide timer
+    setTimerKey(prev => prev + 1);
+  };
+
   // Format time display
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -123,7 +168,7 @@ const AudioPlayerSection = () => {
   };
 
   return (
-    <section id="showcase" className="py-24 bg-background relative overflow-hidden">
+    <section id="showcase" className="py-24 bg-background relative overflow-hidden scroll-mt-40">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5" />
       
@@ -138,49 +183,75 @@ const AudioPlayerSection = () => {
       />
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-20">
-          <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-6 text-sm font-medium">
+        <div className="text-center mb-8">
+          <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-4 text-sm font-medium">
             Listen & Experience
           </Badge>
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-foreground mb-6">
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-4">
             AI-Generated
             <br />
             <span className="bg-gradient-warm bg-clip-text text-transparent">
               Masterpieces
             </span>
           </h2>
-          <p className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed py-4">
             Explore songs created by our AI that showcase the incredible potential of artificial intelligence in music
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto relative">
+          {/* Left Arrow */}
+          <button
+            onClick={() => {
+              const prevTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+              changeTrack(prevTrack);
+            }}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
+          >
+            <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => {
+              const nextTrack = (currentTrack + 1) % tracks.length;
+              changeTrack(nextTrack);
+            }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
+          >
+            <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
           {/* Main Player - Apple Music Style */}
-          <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-8 mb-8 shadow-glass hover:shadow-glass-hover transition-all duration-500">
-            <div className="flex flex-col lg:flex-row gap-8">
+          <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-glass hover:shadow-glass-hover transition-all duration-500">
+            <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-72 h-72 bg-gradient-hero rounded-3xl flex items-center justify-center shadow-glow mx-auto lg:mx-0 overflow-hidden">
+                <div className="w-64 h-64 bg-gradient-hero rounded-3xl flex items-center justify-center shadow-glow mx-auto lg:mx-0 overflow-hidden">
                   {currentSong.albumCover ? (
                     <img src={currentSong.albumCover} alt={currentSong.title} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                      <div className="w-12 h-12 bg-white rounded-full animate-pulse" />
+                    <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <div className="w-10 h-10 bg-white rounded-full animate-pulse" />
                     </div>
                   )}
                 </div>
-                <Badge className="absolute -top-3 -right-3 bg-gradient-premium text-white border-0 px-4 py-1 rounded-full shadow-premium">
+                <Badge className="absolute -top-2 -right-2 bg-gradient-premium text-white border-0 px-3 py-1 rounded-full shadow-premium text-xs">
                   AI Generated
                 </Badge>
               </div>
 
               {/* Track Info & Controls */}
-              <div className="flex-1 space-y-8">
+              <div className="flex-1 space-y-6">
                 <div>
-                  <h3 className="font-heading text-4xl font-bold text-foreground mb-3">
+                  <h3 className="font-heading text-3xl font-bold text-foreground mb-2">
                     {currentSong.title}
                   </h3>
-                  <p className="text-muted-foreground text-xl mb-2">
+                  <p className="text-muted-foreground text-lg mb-2">
                     by {currentSong.artist}
                   </p>
                   <Badge variant="secondary" className="text-sm px-3 py-1 rounded-full">
@@ -188,12 +259,12 @@ const AudioPlayerSection = () => {
                   </Badge>
                 </div>
 
-                <p className="text-foreground/90 leading-relaxed text-lg">
+                <p className="text-foreground/90 leading-relaxed text-base">
                   {currentSong.description}
                 </p>
 
                 {/* Enhanced Waveform */}
-                <div className="flex items-end gap-1.5 h-20 bg-white/5 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-end gap-1.5 h-16 bg-white/5 rounded-2xl p-4 backdrop-blur-sm">
                   {currentSong.waveform.map((height, index) => (
                     <div
                       key={index}
@@ -202,7 +273,7 @@ const AudioPlayerSection = () => {
                       }`}
                       style={{
                         height: `${height}%`,
-                        width: '8px',
+                        width: '6px',
                         opacity: index < 15 ? 0.9 : 0.4
                       }}
                     />
@@ -225,37 +296,37 @@ const AudioPlayerSection = () => {
 
                 {/* Premium Controls */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={prevTrack}
-                      className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+                      className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
                     >
-                      <SkipBack className="w-6 h-6" />
+                      <SkipBack className="w-5 h-5" />
                     </Button>
                     
                     <Button
                       variant="create"
                       size="icon"
                       onClick={togglePlay}
-                      className="w-20 h-20 rounded-full shadow-glow hover:scale-110 transition-all duration-300 backdrop-blur-sm"
+                      className="w-16 h-16 rounded-full shadow-glow hover:scale-110 transition-all duration-300 backdrop-blur-sm"
                     >
-                      {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+                      {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                     </Button>
                     
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={nextTrack}
-                      className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+                      className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
                     >
-                      <SkipForward className="w-6 h-6" />
+                      <SkipForward className="w-5 h-5" />
                     </Button>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="sm" className="gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" className="gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full px-3 py-2">
                       <Heart className="w-4 h-4" />
                       {currentSong.likes.toLocaleString()}
                     </Button>
@@ -270,46 +341,8 @@ const AudioPlayerSection = () => {
                     </Button>
                   </div>
                 </div>
-
-                <div className="text-sm text-muted-foreground font-medium">
-                  {formatTime(currentTime)} / {formatTime(duration)}
-                </div>
               </div>
             </div>
-          </div>
-
-          {/* Premium Playlist */}
-          <div className="space-y-3">
-            {tracks.map((track, index) => (
-              <div
-                key={index}
-                className={`cursor-pointer transition-all duration-500 hover:scale-[1.02] ${
-                  index === currentTrack 
-                    ? 'bg-glass-card border-primary/30 shadow-glow' 
-                    : 'bg-glass-card/50 hover:bg-glass-card border-white/5'
-                } border rounded-2xl p-6 backdrop-blur-xl`}
-                onClick={() => changeTrack(index)}
-              >
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-gradient-premium rounded-2xl flex items-center justify-center shadow-premium">
-                    <div className="w-6 h-6 bg-white rounded-full" />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h4 className="font-heading text-lg font-semibold text-foreground mb-1">{track.title}</h4>
-                    <p className="text-muted-foreground text-base">{track.artist} • {track.genre}</p>
-                  </div>
-                  
-                  <div className="text-right">
-                    <div className="text-base text-muted-foreground font-medium">{formatTime(duration)}</div>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                      <Heart className="w-4 h-4" />
-                      {track.likes.toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

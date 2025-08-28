@@ -124,11 +124,11 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section id="testimonials" className="py-24 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
+    <section id="testimonials" className="py-16 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden scroll-mt-40">
       {/* Background effects - removed to fix purple spots */}
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12">
           <Badge className="bg-gradient-premium text-white border-0 px-6 py-2 mb-6 text-sm font-medium">
             Trusted by Professionals
           </Badge>
@@ -231,23 +231,6 @@ const TestimonialsSection = () => {
               }`}
             />
           ))}
-        </div>
-
-        <div className="text-center mt-16">
-          <div className="flex items-center justify-center gap-8 text-muted-foreground">
-            <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground mb-1">10+</div>
-              <div className="text-sm">Songs Created</div>
-            </div>
-            <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground mb-1">20+</div>
-              <div className="text-sm">Active Creators</div>
-            </div>
-            <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground mb-1">98%</div>
-              <div className="text-sm">Uptime</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

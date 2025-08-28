@@ -8,7 +8,7 @@ const CreateSection = () => {
   const [selectedMode, setSelectedMode] = useState("Auto");
 
   return (
-    <section id="create" className="py-24 bg-gradient-hero relative overflow-hidden">
+    <section id="create" className="py-16 bg-gradient-hero relative overflow-hidden scroll-mt-20">
       <div className="absolute inset-0 bg-black/30" />
       
       <div className="container mx-auto px-4 relative z-10">

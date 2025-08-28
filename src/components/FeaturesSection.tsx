@@ -29,9 +29,9 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section id="features" className="py-24 bg-background">
+    <section id="features" className="py-16 bg-background scroll-mt-40">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Everything you need to
             <br />
