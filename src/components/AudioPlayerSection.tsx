@@ -49,7 +49,7 @@ const AudioPlayerSection = () => {
       duration: "0:00",
       likes: 3200,
       description: "Smooth hip hop and R&B fusion perfect for late night listening",
-      audioFile: "/audio/drake.mp3",
+      audioFile: "/audio/Drake1.mp3",
       waveform: Array.from({ length: 40 }, () => Math.random() * 100)
     }
   ];
