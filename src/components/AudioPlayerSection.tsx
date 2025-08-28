@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, SkipBack, SkipForward, Volume2, Heart, Share2, Download } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import LyricsDisplay from "./LyricsDisplay";
 
 const AudioPlayerSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -12,6 +13,8 @@ const AudioPlayerSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slideDirection, setSlideDirection] = useState('right');
   const [timerKey, setTimerKey] = useState(0);
+  const [lyrics, setLyrics] = useState<any[]>([]);
+  const [showLyrics, setShowLyrics] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const tracks = [
@@ -24,7 +27,8 @@ const AudioPlayerSection = () => {
       description: "A dreamy R&B piece inspired by ocean waves and coastal vibes",
       audioFile: "/audio/frank.mp3",
       albumCover: "/covers/frank.jpeg",
-      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100),
+      lyricsFile: "/lyrics/frank_blue_hours.json"
     },
     {
       title: "Half of Me",
@@ -35,7 +39,8 @@ const AudioPlayerSection = () => {
       description: "Emotional pop ballad with heartfelt storytelling and melodic hooks",
       audioFile: "/audio/taylorswift.mp3",
       albumCover: "/covers/taylor_cover.jpg",
-      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100),
+      lyricsFile: "/lyrics/taylor_half_of_me.json"
     },
     {
       title: "Nothing But Wins",
@@ -46,7 +51,8 @@ const AudioPlayerSection = () => {
       description: "Smooth hip hop and R&B fusion perfect for late night listening",
       audioFile: "/audio/Drake1.mp3",
       albumCover: "/covers/drake_cover.jpg",
-      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100),
+      lyricsFile: "/lyrics/drake_nothing_but_wins.json"
     },
     {
       title: "Ride With You",
@@ -57,7 +63,8 @@ const AudioPlayerSection = () => {
       description: "High-energy hip hop track with atmospheric beats and autotune vocals",
       audioFile: "/audio/travis.mp3",
       albumCover: "/covers/travis.jpeg",
-      waveform: Array.from({ length: 75 }, () => Math.random() * 100)
+      waveform: Array.from({ length: 75 }, () => Math.random() * 100),
+      lyricsFile: "/lyrics/travis_ride_with_you.json"
     }
   ];
 
@@ -75,6 +82,25 @@ const AudioPlayerSection = () => {
     }
   };
 
+  // Load lyrics for a track
+  const loadLyrics = async (lyricsFile: string) => {
+    try {
+      console.log('Loading lyrics from:', lyricsFile);
+      const response = await fetch(lyricsFile);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Lyrics loaded:', data);
+        setLyrics(data.lyrics || []);
+      } else {
+        console.log('Lyrics file not found:', lyricsFile);
+        setLyrics([]);
+      }
+    } catch (error) {
+      console.log('Error loading lyrics:', error);
+      setLyrics([]);
+    }
+  };
+
   // Handle track change
   const changeTrack = (index: number) => {
     setCurrentTrack(index);
@@ -82,6 +108,10 @@ const AudioPlayerSection = () => {
     setCurrentTime(0);
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
+    }
+    // Load lyrics for the new track
+    if (tracks[index].lyricsFile) {
+      loadLyrics(tracks[index].lyricsFile);
     }
   };
 
@@ -119,6 +149,13 @@ const AudioPlayerSection = () => {
       audioRef.current.load();
     }
   }, [currentTrack]);
+
+  // Load lyrics when component mounts
+  useEffect(() => {
+    if (tracks[currentTrack].lyricsFile) {
+      loadLyrics(tracks[currentTrack].lyricsFile);
+    }
+  }, []);
 
   // Auto-slide main player every 6 seconds
   useEffect(() => {
@@ -231,7 +268,7 @@ const AudioPlayerSection = () => {
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-72 h-[328px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
+                <div className="w-72 h-[315px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
                   {currentSong.albumCover ? (
                     <img src={currentSong.albumCover} alt={currentSong.title} className="w-full h-full object-cover" />
                   ) : (
@@ -247,41 +284,60 @@ const AudioPlayerSection = () => {
 
               {/* Track Info & Controls */}
               <div className="flex-1 space-y-6">
-                <div>
-                  <h3 className="font-heading text-3xl font-bold text-foreground mb-2">
-                    {currentSong.title}
-                  </h3>
-                  <p className="text-muted-foreground text-lg mb-2">
-                    by {currentSong.artist}
-                  </p>
-                  <Badge variant="secondary" className="text-sm px-3 py-1 rounded-full">
-                    {currentSong.genre}
-                  </Badge>
+                <div className="relative">
+                             <h3 className="text-3xl font-bold text-white mb-2">
+             {currentSong.title}
+           </h3>
+           <p className="text-white/80 text-lg mb-8">
+             by {currentSong.artist}
+           </p>
+                  
+                  {/* Show Lyrics Toggle */}
+                  <button 
+                    onClick={() => setShowLyrics(!showLyrics)}
+                    className="absolute top-0 right-0 text-sm bg-white/10 px-3 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/20 transition-all duration-200"
+                  >
+                    {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
+                  </button>
                 </div>
 
-                <p className="text-foreground/90 leading-relaxed text-base">
-                  {currentSong.description}
-                </p>
-
-                {/* Enhanced Waveform */}
-                <div className="flex items-end gap-1 h-16 bg-white/5 rounded-2xl p-4 backdrop-blur-sm overflow-hidden">
-                  {currentSong.waveform.map((height, index) => (
-                    <div
-                      key={index}
-                      className={`bg-gradient-create rounded-full transition-all duration-300 ${
-                        isPlaying ? 'animate-pulse' : ''
-                      }`}
-                      style={{
-                        height: `${height}%`,
-                        width: '4px',
-                        opacity: index < 15 ? 0.9 : 0.4
-                      }}
-                    />
-                  ))}
+                {/* Lyrics Display / Waveform */}
+                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-3 h-20 -mt-6">
+                  {showLyrics && isPlaying && lyrics.length > 0 ? (
+                    // Show lyrics only when Show Lyrics button is pressed AND playing
+                    <div className="text-center flex items-center justify-center h-full min-h-full">
+                      {(() => {
+                        const currentLineIndex = lyrics.findIndex((line, index) => {
+                          const nextLine = lyrics[index + 1];
+                          return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
+                        });
+                        
+                        const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
+                        
+                        return currentLine ? (
+                          <p className="text-foreground/90 text-2xl font-bold text-center transition-all duration-700 ease-in-out leading-tight">
+                            {currentLine.text}
+                          </p>
+                        ) : null;
+                      })()}
+                    </div>
+                  ) : (
+                    // Show waveform when Hide Lyrics is pressed OR not playing
+                    <div className="flex items-end justify-center gap-[4.3px] h-full">
+                      {currentSong.waveform.map((height, index) => (
+                        <div
+                          key={index}
+                          className="bg-gradient-create rounded-full transition-all duration-300"
+                          style={{
+                            height: `${height * 0.96}%`,
+                            width: '4.5px',
+                            opacity: index < 15 ? 0.9 : 0.4
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                {/* Spacer */}
-                <div className="h-[0.1px]"></div>
 
                 {/* Progress Bar */}
                 <div className="space-y-2">
@@ -298,7 +354,7 @@ const AudioPlayerSection = () => {
                 </div>
 
                 {/* Premium Controls */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between -mt-8">
                   <div className="flex items-center gap-4">
                     <Button
                       variant="ghost"
@@ -313,7 +369,7 @@ const AudioPlayerSection = () => {
                       variant="create"
                       size="icon"
                       onClick={togglePlay}
-                      className="w-16 h-16 rounded-full shadow-glow hover:scale-110 transition-all duration-300 backdrop-blur-sm"
+                      className="w-12 h-12 rounded-full shadow-glow hover:scale-110 transition-all duration-300 backdrop-blur-sm"
                     >
                       {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                     </Button>

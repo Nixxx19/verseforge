@@ -1,0 +1,55 @@
+{
+  "songId": "taylor_half_of_me",
+  "title": "Half of Me",
+  "artist": "Taylor Swift",
+  "lyrics": [
+    {
+      "time": 0.0,
+      "text": "Half of me, half of me"
+    },
+    {
+      "time": 2.5,
+      "text": "Emotional pop ballad"
+    },
+    {
+      "time": 5.0,
+      "text": "With heartfelt storytelling"
+    },
+    {
+      "time": 7.5,
+      "text": "And melodic hooks"
+    },
+    {
+      "time": 10.0,
+      "text": "Half of me, half of me"
+    },
+    {
+      "time": 12.5,
+      "text": "Emotional pop ballad"
+    },
+    {
+      "time": 15.0,
+      "text": "With heartfelt storytelling"
+    },
+    {
+      "time": 17.5,
+      "text": "And melodic hooks"
+    },
+    {
+      "time": 20.0,
+      "text": "Half of me, half of me"
+    },
+    {
+      "time": 22.5,
+      "text": "Emotional pop ballad"
+    },
+    {
+      "time": 25.0,
+      "text": "With heartfelt storytelling"
+    },
+    {
+      "time": 27.5,
+      "text": "And melodic hooks"
+    }
+  ]
+}

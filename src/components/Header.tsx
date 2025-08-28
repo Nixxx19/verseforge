@@ -35,7 +35,12 @@ const Header = () => {
       
       // Special case for showcase - scroll even further down
       if (sectionId === 'showcase') {
-        extraOffset = -60; // Much more negative offset for showcase
+        extraOffset = -70; // Much more negative offset for showcase
+      }
+      
+      // Special case for reviews - scroll even further down
+      if (sectionId === 'testimonials') {
+        extraOffset = -36; // Much more negative offset for testimonials
       }
       
       const elementPosition = element.offsetTop - headerHeight - extraOffset;
