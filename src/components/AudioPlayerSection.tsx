@@ -14,7 +14,12 @@ const AudioPlayerSection = () => {
   const [slideDirection, setSlideDirection] = useState('right');
   const [timerKey, setTimerKey] = useState(0);
   const [lyrics, setLyrics] = useState<any[]>([]);
-  const [showLyrics, setShowLyrics] = useState(true);
+  const [showLyrics, setShowLyrics] = useState(false);
+  
+  // Reset showLyrics to false on component mount
+  useEffect(() => {
+    setShowLyrics(false);
+  }, []);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const tracks = [
