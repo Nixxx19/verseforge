@@ -20,7 +20,7 @@ const AudioPlayerSection = () => {
   const tracks = [
     {
       title: "Blue Hours",
-      artist: "Frank Ocean",
+      artist: "Moody, atmospheric R&B with soulful vocals and lush synths in the style of Frank Ocean.",
       genre: "R&B",
       duration: "0:00",
       likes: 2847,
@@ -32,7 +32,7 @@ const AudioPlayerSection = () => {
     },
     {
       title: "Half of Me",
-      artist: "Taylor Swift",
+      artist: "Emotional acoustic pop about love and heartbreak in autumn, in the style of Taylor Swift.",
       genre: "Pop",
       duration: "0:00",
       likes: 4521,
@@ -44,7 +44,7 @@ const AudioPlayerSection = () => {
     },
     {
       title: "Nothing But Wins",
-      artist: "Drake",
+      artist: "Drake-style hip-hop about winning in life, with confident rap and a triumphant hook.",
       genre: "Hip Hop/R&B",
       duration: "0:00",
       likes: 3200,
@@ -56,7 +56,7 @@ const AudioPlayerSection = () => {
     },
     {
       title: "Ride With You",
-      artist: "Travis Scott",
+      artist: "Melodic trap love song in Travis Scott style with autotuned vocals and spacey vibes.",
       genre: "Hip Hop",
       duration: "0:00",
       likes: 1893,
@@ -264,7 +264,13 @@ const AudioPlayerSection = () => {
           </button>
 
           {/* Main Player - Apple Music Style */}
-          <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500">
+          <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500 relative">
+                         {/* Warning when Show Lyrics is pressed but song is not playing */}
+             {showLyrics && !isPlaying && (
+               <div className="absolute -top-8 right-1.5 text-white/80 text-xs font-medium bg-black/20 px-2 py-1 rounded-md">
+                 Play the track first*
+               </div>
+             )}
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
@@ -288,8 +294,8 @@ const AudioPlayerSection = () => {
                              <h3 className="text-3xl font-bold text-white mb-2">
              {currentSong.title}
            </h3>
-           <p className="text-white/80 text-lg mb-8">
-             by {currentSong.artist}
+           <p className="text-white/80 text-sm mb-8">
+             Prompt : {currentSong.artist}
            </p>
                   
                   {/* Show Lyrics Toggle */}
