@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Play, Pause, SkipBack, SkipForward, Volume2, Heart, Share2, Download } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import LyricsDisplay from "./LyricsDisplay";
+import { loadLRCFile, ParsedLRC } from "@/lib/lrcParser";
 
 const AudioPlayerSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -33,7 +34,8 @@ const AudioPlayerSection = () => {
       audioFile: "/audio/frank.mp3",
       albumCover: "/covers/frank.jpeg",
       waveform: Array.from({ length: 75 }, () => Math.random() * 100),
-      lyricsFile: "/lyrics/frank_blue_hours.json"
+      lyricsFile: "/lyrics/frank_lyrics.json",
+      isLRC: false
     },
     {
       title: "Half of Me",
@@ -88,17 +90,56 @@ const AudioPlayerSection = () => {
   };
 
   // Load lyrics for a track
-  const loadLyrics = async (lyricsFile: string) => {
+  const loadLyrics = async (lyricsFile: string, isLRC: boolean = false) => {
     try {
-      console.log('Loading lyrics from:', lyricsFile);
-      const response = await fetch(lyricsFile);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Lyrics loaded:', data);
-        setLyrics(data.lyrics || []);
+      console.log('Loading lyrics from:', lyricsFile, 'isLRC:', isLRC);
+      
+      if (isLRC) {
+        // For text files, load directly and parse manually
+        const response = await fetch(lyricsFile);
+        if (response.ok) {
+          const text = await response.text();
+          console.log('Raw text content:', text);
+          
+          // Parse the text content manually
+          const lines = text.split('\n');
+          const parsedLyrics: any[] = [];
+          
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+            
+            // Parse timestamp format [MM:SS.cc]lyrics
+            const timestampMatch = trimmedLine.match(/^\[(\d{2}):(\d{2})\.(\d{2})\](.+)$/);
+            if (timestampMatch) {
+              const [, minutes, seconds, centiseconds, text] = timestampMatch;
+              const timeInSeconds = parseInt(minutes) * 60 + parseInt(seconds) + parseInt(centiseconds) / 100;
+              
+              parsedLyrics.push({
+                time: timeInSeconds,
+                text: text.trim()
+              });
+            }
+          }
+          
+          // Sort by time
+          parsedLyrics.sort((a, b) => a.time - b.time);
+          console.log('Parsed lyrics:', parsedLyrics);
+          setLyrics(parsedLyrics);
+        } else {
+          console.log('Lyrics file not found:', lyricsFile);
+          setLyrics([]);
+        }
       } else {
-        console.log('Lyrics file not found:', lyricsFile);
-        setLyrics([]);
+        const response = await fetch(lyricsFile);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('JSON lyrics loaded:', data);
+          setLyrics(data.lyrics || []);
+        } else {
+          console.log('Lyrics file not found:', lyricsFile);
+          setLyrics([]);
+        }
       }
     } catch (error) {
       console.log('Error loading lyrics:', error);
@@ -116,7 +157,7 @@ const AudioPlayerSection = () => {
     }
     // Load lyrics for the new track
     if (tracks[index].lyricsFile) {
-      loadLyrics(tracks[index].lyricsFile);
+      loadLyrics(tracks[index].lyricsFile, tracks[index].isLRC);
     }
   };
 
@@ -158,7 +199,7 @@ const AudioPlayerSection = () => {
   // Load lyrics when component mounts
   useEffect(() => {
     if (tracks[currentTrack].lyricsFile) {
-      loadLyrics(tracks[currentTrack].lyricsFile);
+      loadLyrics(tracks[currentTrack].lyricsFile, tracks[currentTrack].isLRC);
     }
   }, []);
 
@@ -211,6 +252,32 @@ const AudioPlayerSection = () => {
 
   return (
     <section id="showcase" className="py-24 bg-background relative overflow-hidden scroll-mt-40">
+      {/* Custom CSS animations for lyrics */}
+      <style>{`
+        @keyframes rollerFlow {
+          0% {
+            opacity: 0;
+            transform: translateY(60px);
+          }
+          20% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          80% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-60px);
+          }
+        }
+        
+        .lyric-roller {
+          animation: rollerFlow 3s ease-out forwards;
+        }
+      `}</style>
+      
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5" />
       
@@ -316,7 +383,7 @@ const AudioPlayerSection = () => {
                 <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-3 h-20 -mt-6">
                   {showLyrics && isPlaying && lyrics.length > 0 ? (
                     // Show lyrics only when Show Lyrics button is pressed AND playing
-                    <div className="text-center flex items-center justify-center h-full min-h-full">
+                    <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
                       {(() => {
                         const currentLineIndex = lyrics.findIndex((line, index) => {
                           const nextLine = lyrics[index + 1];
@@ -324,9 +391,16 @@ const AudioPlayerSection = () => {
                         });
                         
                         const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
+                        const prevLine = currentLineIndex > 0 ? lyrics[currentLineIndex - 1] : null;
                         
                         return currentLine ? (
-                          <p className="text-foreground/90 text-2xl font-bold text-center transition-all duration-700 ease-in-out leading-tight">
+                          <p 
+                            key={currentLineIndex}
+                            className="lyric-roller absolute text-foreground/90 text-3xl font-bold text-center leading-tight"
+                            style={{
+                              animation: 'rollerFlow 3s ease-out forwards'
+                            }}
+                          >
                             {currentLine.text}
                           </p>
                         ) : null;
