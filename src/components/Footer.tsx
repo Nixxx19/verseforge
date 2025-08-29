@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="py-7 bg-background border-t border-white/10">
+    <footer className="py-6 bg-background border-t border-white/10">
       <div className="container mx-auto px-4">
 
         {/* Copyright */}

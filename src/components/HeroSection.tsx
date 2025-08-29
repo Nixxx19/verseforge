@@ -271,10 +271,15 @@ const HeroSection = () => {
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Describe your musical vision..."
+              placeholder="Describe your musical vision as a creative prompt "
               className="flex-1 bg-transparent border-none text-white placeholder:text-white/70 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl font-light"
             />
-            <Button variant="create" size="lg" className="px-12 rounded-xl font-semibold text-lg shadow-glow hover:scale-105 transition-all duration-300">
+            <Button 
+              variant="create" 
+              size="lg" 
+              className="px-12 rounded-xl font-semibold text-lg shadow-glow hover:scale-105 transition-all duration-300"
+              onClick={() => window.location.href = '/generate'}
+            >
               Generate
             </Button>
           </div>

@@ -4,7 +4,6 @@ import FeaturesSection from "@/components/FeaturesSection";
 import AudioPlayerSection from "@/components/AudioPlayerSection";
 import CreateSection from "@/components/CreateSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import MySongsSection from "@/components/MySongsSection";
 import StatisticsSection from "@/components/StatisticsSection";
 
 import Footer from "@/components/Footer";
@@ -19,7 +18,6 @@ const Index = () => {
       <CreateSection />
       <TestimonialsSection />
       <StatisticsSection />
-      <MySongsSection />
       <Footer />
     </div>
   );

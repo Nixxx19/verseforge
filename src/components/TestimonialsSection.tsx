@@ -124,7 +124,7 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section id="testimonials" className="py-16 bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden scroll-mt-40">
+    <section id="testimonials" className="py-24 bg-background relative overflow-hidden scroll-mt-40">
       {/* Background effects - removed to fix purple spots */}
       
       <div className="container mx-auto px-4 relative z-10">

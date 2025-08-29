@@ -43,6 +43,11 @@ const Header = () => {
         extraOffset = -36; // Much more negative offset for testimonials
       }
       
+      // Special case for my-songs - scroll even further down
+      if (sectionId === 'my-songs') {
+        extraOffset = -40; // Much more negative offset for my-songs
+      }
+      
       const elementPosition = element.offsetTop - headerHeight - extraOffset;
       
       window.scrollTo({
@@ -187,31 +192,7 @@ const Header = () => {
               Reviews
               <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
             </button>
-            <button 
-              onClick={() => scrollToSection('my-songs')} 
-              className="text-foreground font-medium cursor-pointer px-3 py-1 relative transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-0"
-              onMouseEnter={(e) => {
-                const button = e.currentTarget;
-                const underline = button.querySelector('.underline') as HTMLElement;
-                if (underline) {
-                  underline.style.width = '83%';
-                  underline.style.left = '50%';
-                  underline.style.boxShadow = '0 4px 12px -2px rgba(102, 126, 234, 0.3)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                const button = e.currentTarget;
-                const underline = button.querySelector('.underline') as HTMLElement;
-                if (underline) {
-                  underline.style.width = '0%';
-                  underline.style.left = '50%';
-                  underline.style.boxShadow = '';
-                }
-              }}
-            >
-              My Songs
-              <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
-            </button>
+
           </nav>
         </div>
         
