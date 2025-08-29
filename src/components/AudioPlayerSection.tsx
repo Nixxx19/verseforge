@@ -550,5 +550,4 @@ const AudioPlayerSection = () => {
     </section>
   );
 };
-
 export default AudioPlayerSection;
