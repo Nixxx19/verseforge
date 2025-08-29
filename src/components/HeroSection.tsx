@@ -2,8 +2,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Music, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useUser } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
+import SignInDialog from "./SignInDialog";
 
 const HeroSection = () => {
+  const { isSignedIn } = useUser();
+  const navigate = useNavigate();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
+  const [showError, setShowError] = useState(false);
+  
   const prompts = [
     { genre: "Travis Scott", text: "Watering Plants" },
     { genre: "Drake", text: "Late Night" },
@@ -131,6 +139,38 @@ const HeroSection = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Auto-focus input when coming from Start Creating button or URL parameter
+  useEffect(() => {
+    const handleFocusPromptBar = () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    // Listen for custom event from Start Creating button
+    window.addEventListener('focusPromptBar', handleFocusPromptBar);
+    
+    // Check for URL parameter from Create Another/Create New Song buttons
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldFocus = urlParams.get('focus');
+    
+    if (shouldFocus === 'true' && inputRef.current) {
+      // Small delay to ensure the page is fully loaded
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      
+      // Remove the focus parameter from URL after using it
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+    
+    return () => {
+      window.removeEventListener('focusPromptBar', handleFocusPromptBar);
+    };
+  }, []);
+
+  // Auto-typing effect for initial prompt
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
@@ -271,18 +311,43 @@ const HeroSection = () => {
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Describe your musical vision as a creative prompt "
+              placeholder="Describe your musical vision as a creative prompt... "
               className="flex-1 bg-transparent border-none text-white placeholder:text-white/70 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl font-light"
             />
             <Button 
               variant="create" 
               size="lg" 
-              className="px-12 rounded-xl font-semibold text-lg shadow-glow hover:scale-105 transition-all duration-300"
-              onClick={() => window.location.href = '/generate'}
+              className="px-12 rounded-xl font-semibold text-lg shadow-glow hover:scale-100 active:scale-100 transform-none"
+              onClick={() => {
+                if (!isSignedIn) {
+                  setIsSignInDialogOpen(true);
+                  return;
+                }
+                
+                if (!inputValue.trim()) {
+                  setShowError(true);
+                  // Hide error after 3 seconds
+                  setTimeout(() => setShowError(false), 3000);
+                  return;
+                }
+                
+                // Clear any existing error
+                setShowError(false);
+                navigate('/generate');
+              }}
             >
               Generate
             </Button>
           </div>
+
+          {/* Error Message */}
+          {showError && (
+            <div className="mt-3 text-center">
+              <p className="text-red-400 text-sm font-medium">
+                ⚠️ Please enter a prompt before generating
+              </p>
+            </div>
+          )}
 
           {/* Suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
@@ -326,6 +391,13 @@ const HeroSection = () => {
           </Button>
         </div>
       </div>
+
+      {/* Sign In Dialog */}
+      <SignInDialog 
+        isOpen={isSignInDialogOpen}
+        onClose={() => setIsSignInDialogOpen(false)}
+        onAuthSuccess={() => setIsSignInDialogOpen(false)}
+      />
     </section>
   );
 };

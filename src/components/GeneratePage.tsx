@@ -5,6 +5,8 @@ import { useUser } from '@clerk/clerk-react';
 import UserProfileDropdown from "./UserProfileDropdown";
 import { useState, useEffect } from "react";
 import MySongsSection from "./MySongsSection";
+import StatisticsSection from "./StatisticsSection";
+import Footer from "./Footer";
 
 const GeneratePage = () => {
   const { isSignedIn, isLoaded, user } = useUser();
@@ -27,7 +29,7 @@ const GeneratePage = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-white/10">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3 cursor-pointer">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <div className="w-10 h-10 bg-gradient-premium rounded-xl flex items-center justify-center">
                 <Swords className="w-6 h-6 text-white" />
               </div>
@@ -65,15 +67,17 @@ const GeneratePage = () => {
               <button 
                 className="text-foreground font-medium cursor-pointer px-3 py-1 relative transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-0"
                 onClick={() => {
-                  const element = document.getElementById('my-songs');
-                  if (element) {
-                    const headerHeight = 80;
-                    const elementPosition = element.offsetTop - headerHeight - 40;
-                    window.scrollTo({
-                      top: elementPosition,
-                      behavior: 'smooth'
-                    });
-                  }
+                  setTimeout(() => {
+                    const element = document.getElementById('my-songs');
+                    if (element) {
+                      const headerHeight = 80;
+                      const elementPosition = element.offsetTop - headerHeight - -43;
+                      window.scrollTo({
+                        top: elementPosition,
+                        behavior: 'smooth'
+                      });
+                    }
+                  }, 100);
                 }}
                 onMouseEnter={(e) => {
                   const button = e.currentTarget;
@@ -94,7 +98,7 @@ const GeneratePage = () => {
                   }
                 }}
               >
-                My Songs
+                VerseVault
                 <div className="underline absolute bottom-1 left-1/2 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 ease-out" style={{ width: '0%', transform: 'translateX(-50%)' }}></div>
               </button>
               <button 
@@ -125,38 +129,19 @@ const GeneratePage = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            {isLoaded && showUserProfile ? (
-              <UserProfileDropdown tempEmail={null} />
-            ) : (
-              <Button 
-                variant="ghost" 
-                className="hidden sm:inline-flex text-white font-medium px-3.5 h-11 border border-white/10 backdrop-blur-sm transition-all duration-300 rounded-md focus:outline-none focus:ring-0 focus-visible:ring-0"
-                onMouseEnter={(e) => {
-                  const button = e.currentTarget;
-                  button.style.borderColor = '#667eea';
-                  button.style.background = 'transparent';
-                }}
-                onMouseLeave={(e) => {
-                  const button = e.currentTarget;
-                  button.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                  button.style.background = 'transparent';
-                }}
-              >
-                Sign In
-              </Button>
-            )}
+            <UserProfileDropdown tempEmail={null} />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-20">
+      <div className="container mx-auto px-4 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-20 pb-20">
         <div className="text-center max-w-4xl">
-          <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-6 text-sm font-medium">
+          <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-8 text-sm font-medium">
             Generation in Progress
           </Badge>
           
-          <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6">
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-8">
             Creating Your
             <br />
             <span className="bg-gradient-warm bg-clip-text text-transparent">
@@ -164,37 +149,37 @@ const GeneratePage = () => {
             </span>
           </h1>
           
-          <p className="text-white/80 text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
             Our AI is working on your musical vision. This usually takes 15-30 seconds.
           </p>
 
           {/* Progress Section */}
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 max-w-2xl mx-auto">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-gradient-create rounded-full flex items-center justify-center animate-pulse">
-                <Plus className="w-8 h-8 text-white" />
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 max-w-2xl mx-auto mb-12">
+            <div className="flex items-center justify-center gap-6 mb-8">
+              <div className="w-20 h-20 bg-gradient-create rounded-full flex items-center justify-center animate-pulse">
+                <Plus className="w-10 h-10 text-white" />
               </div>
               <div className="text-left">
-                <h3 className="text-white text-lg font-semibold">Processing...</h3>
-                <p className="text-white/70 text-sm">Analyzing your prompt</p>
+                <h3 className="text-white text-xl font-semibold mb-2">Processing...</h3>
+                <p className="text-white/70 text-base">Analyzing your prompt</p>
               </div>
             </div>
             
             {/* Progress Bar */}
-            <div className="w-full bg-white/20 rounded-full h-3 mb-4">
-              <div className="bg-gradient-create h-3 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+            <div className="w-full bg-white/20 rounded-full h-4 mb-6">
+              <div className="bg-gradient-create h-4 rounded-full animate-pulse" style={{ width: '60%' }}></div>
             </div>
             
-            <p className="text-white/60 text-sm">Estimated time: 20 seconds</p>
+            <p className="text-white/60 text-base">Estimated time: 20 seconds</p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <Button variant="secondary" className="rounded-full px-6 py-3">
+          <div className="flex items-center justify-center gap-6 mt-12">
+            <Button variant="secondary" className="rounded-full px-8 py-4 text-base">
               Cancel Generation
             </Button>
-            <Button variant="create" className="rounded-full px-6 py-3">
-              <Plus className="w-4 h-4 mr-2" />
+            <Button variant="create" className="rounded-full px-8 py-4 text-base" onClick={() => window.location.href = '/?focus=true'}>
+              <Plus className="w-5 h-5 mr-3" />
               Create Another
             </Button>
           </div>
@@ -203,6 +188,12 @@ const GeneratePage = () => {
       
       {/* My Songs Section */}
       <MySongsSection />
+      
+      {/* Statistics Section */}
+      <StatisticsSection />
+      
+      {/* Footer */}
+      <Footer />
     </section>
   );
 };

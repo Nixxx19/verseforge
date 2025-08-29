@@ -29,7 +29,7 @@ const MySongsSection = () => {
   return (
     <section id="my-songs" className="py-16 bg-background relative overflow-hidden scroll-mt-24">
       {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5" />
+      <div className="absolute inset-0 bg-background" />
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
@@ -37,11 +37,7 @@ const MySongsSection = () => {
             Your Creations
           </Badge>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-4">
-            My
-            <br />
-            <span className="bg-gradient-warm bg-clip-text text-transparent">
-              Songs
-            </span>
+            VerseVault
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
             Access and manage all the songs you've created with VerseForge AI
@@ -55,6 +51,7 @@ const MySongsSection = () => {
               variant="create" 
               size="lg" 
               className="px-12 py-6 text-xl font-bold rounded-3xl shadow-glow hover:scale-105 transition-all duration-300"
+              onClick={() => window.location.href = '/?focus=true'}
             >
               <Plus className="w-6 h-6 mr-3" />
               Create New Song

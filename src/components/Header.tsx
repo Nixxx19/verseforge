@@ -27,6 +27,9 @@ const Header = () => {
     }
   }, [isSignedIn, isLoaded, user, tempUserEmail]);
 
+  // Show user profile immediately when signed in (for instant reload experience)
+  const shouldShowUserProfile = isLoaded && (isSignedIn || showUserProfile);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -62,6 +65,11 @@ const Header = () => {
       top: 0,
       behavior: 'smooth'
     });
+    
+    // Dispatch custom event to trigger autofocus on prompt bar
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('focusPromptBar'));
+    }, 500);
   };
 
   const scrollToCreate = () => {
@@ -197,7 +205,7 @@ const Header = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          {isLoaded && showUserProfile ? (
+          {shouldShowUserProfile ? (
             <UserProfileDropdown tempEmail={tempUserEmail} />
           ) : (
             <Button 
@@ -221,7 +229,13 @@ const Header = () => {
           <Button 
             variant="ghost" 
             className="font-semibold px-3.5 h-11 border border-white/10 backdrop-blur-sm transition-all duration-300 rounded-md focus:outline-none focus:ring-0 focus-visible:ring-0 text-white" 
-            onClick={scrollToCreate}
+            onClick={() => {
+              if (isSignedIn) {
+                scrollToTop();
+              } else {
+                setIsSignInDialogOpen(true);
+              }
+            }}
             onMouseEnter={(e) => {
               const button = e.currentTarget;
               button.style.borderColor = '#667eea';
