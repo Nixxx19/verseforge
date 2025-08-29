@@ -82,6 +82,8 @@ const AudioPlayerSection = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        // Auto-hide lyrics when pausing
+        setShowLyrics(false);
       } else {
         audioRef.current.play();
       }
@@ -257,24 +259,24 @@ const AudioPlayerSection = () => {
         @keyframes rollerFlow {
           0% {
             opacity: 0;
-            transform: translateY(60px);
+            transform: translateY(20px);
           }
-          20% {
+          8% {
             opacity: 1;
             transform: translateY(0);
           }
-          80% {
+          92% {
             opacity: 1;
             transform: translateY(0);
           }
           100% {
             opacity: 0;
-            transform: translateY(-60px);
+            transform: translateY(-20px);
           }
         }
         
         .lyric-roller {
-          animation: rollerFlow 3s ease-out forwards;
+          animation: rollerFlow 0.1s ease-out forwards;
         }
       `}</style>
       
@@ -380,7 +382,7 @@ const AudioPlayerSection = () => {
                 </div>
 
                 {/* Lyrics Display / Waveform */}
-                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-3 h-20 -mt-6">
+                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-0 h-20 -mt-6">
                   {showLyrics && isPlaying && lyrics.length > 0 ? (
                     // Show lyrics only when Show Lyrics button is pressed AND playing
                     <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
@@ -416,7 +418,7 @@ const AudioPlayerSection = () => {
                           style={{
                             height: `${height * 0.96}%`,
                             width: '4.5px',
-                            opacity: index < 15 ? 0.9 : 0.4
+                            opacity: 0.65
                           }}
                         />
                       ))}
