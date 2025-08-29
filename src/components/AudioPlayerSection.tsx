@@ -16,6 +16,8 @@ const AudioPlayerSection = () => {
   const [timerKey, setTimerKey] = useState(0);
   const [lyrics, setLyrics] = useState<any[]>([]);
   const [showLyrics, setShowLyrics] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
   
   // Reset showLyrics to false on component mount
   useEffect(() => {
@@ -88,6 +90,30 @@ const AudioPlayerSection = () => {
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  // Handle volume control
+  const toggleMute = () => {
+    if (audioRef.current) {
+      if (isMuted) {
+        audioRef.current.volume = volume;
+        setIsMuted(false);
+      } else {
+        audioRef.current.volume = 0;
+        setIsMuted(true);
+      }
+    }
+  };
+
+  // Handle volume change
+  const handleVolumeChange = (newVolume: number) => {
+    if (audioRef.current) {
+      const clampedVolume = Math.max(0, Math.min(1, newVolume));
+      setVolume(clampedVolume);
+      if (!isMuted) {
+        audioRef.current.volume = clampedVolume;
+      }
     }
   };
 
@@ -428,7 +454,19 @@ const AudioPlayerSection = () => {
 
                 {/* Progress Bar */}
                 <div className="space-y-2">
-                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="w-full bg-white/10 rounded-full h-2 overflow-hidden cursor-pointer relative"
+                    onClick={(e) => {
+                      if (audioRef.current && duration > 0) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const clickPercent = clickX / rect.width;
+                        const newTime = clickPercent * duration;
+                        audioRef.current.currentTime = newTime;
+                        setCurrentTime(newTime);
+                      }
+                    }}
+                  >
                     <div 
                       className="h-full bg-gradient-create rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
@@ -482,8 +520,25 @@ const AudioPlayerSection = () => {
                     <Button variant="ghost" size="sm" className="bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full p-2">
                       <Download className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full p-2">
-                      <Volume2 className="w-4 h-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                                              className={`backdrop-blur-sm rounded-full p-2 transition-all duration-300 ${
+                          isMuted 
+                            ? "bg-red-600/60 hover:bg-red-700/70 text-white" 
+                            : "bg-white/5 hover:bg-white/10"
+                        }`}
+                      onClick={toggleMute}
+                      title={isMuted ? "Unmute" : "Mute"}
+                    >
+                      {isMuted ? (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                        </svg>
+                      ) : (
+                        <Volume2 className="w-4 h-4" />
+                      )}
                     </Button>
                   </div>
                 </div>

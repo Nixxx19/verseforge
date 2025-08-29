@@ -1,59 +1,118 @@
 {
-  "songId": "drake_nothing_but_wins",
   "title": "Nothing But Wins",
   "artist": "Drake",
   "lyrics": [
     {
-      "time": 0.0,
-      "text": "Yeah, yeah, yeah"
+      "time": 0.43,
+      "text": "Started from the bottom now I'm here"
     },
     {
-      "time": 2.0,
-      "text": "Nothing but wins, nothing but wins"
+      "time": 3.76,
+      "text": "Every loss just made the vision clear"
     },
     {
-      "time": 4.0,
-      "text": "Smooth hip hop and R&B fusion"
+      "time": 6.85,
+      "text": "They tried to count me out but I persevere"
     },
     {
-      "time": 6.0,
-      "text": "Perfect for late night listening"
+      "time": 10.50,
+      "text": "Now I'm winning and the crown is near"
     },
     {
-      "time": 8.0,
-      "text": "Nothing but wins, nothing but wins"
+      "time": 13.65,
+      "text": "Win win win win"
     },
     {
-      "time": 10.0,
-      "text": "Smooth hip hop and R&B fusion"
+      "time": 16.80,
+      "text": "That's all I do"
     },
     {
-      "time": 12.0,
-      "text": "Perfect for late night listening"
+      "time": 20.41,
+      "text": "Win win win win"
     },
     {
-      "time": 14.0,
-      "text": "Nothing but wins, nothing but wins"
+      "time": 23.63,
+      "text": "I'm coming through"
     },
     {
-      "time": 16.0,
-      "text": "Smooth hip hop and R&B fusion"
+      "time": 27.77,
+      "text": "Had to learn the game from my mistakes"
     },
     {
-      "time": 18.0,
-      "text": "Perfect for late night listening"
+      "time": 30.96,
+      "text": "Every setback was what it takes"
     },
     {
-      "time": 20.0,
-      "text": "Nothing but wins, nothing but wins"
+      "time": 34.45,
+      "text": "Built my empire from the ground up high"
     },
     {
-      "time": 22.0,
-      "text": "Smooth hip hop and R&B fusion"
+      "time": 37.42,
+      "text": "Now I'm soaring through the open sky"
     },
     {
-      "time": 24.0,
-      "text": "Perfect for late night listening"
+      "time": 40.85,
+      "text": "Money flowing like a river stream"
+    },
+    {
+      "time": 44.65,
+      "text": "Living out my wildest dream"
+    },
+    {
+      "time": 48.30,
+      "text": "All the doubters had to take it back"
+    },
+    {
+      "time": 51.63,
+      "text": "Now I'm winning that's a proven fact"
+    },
+    {
+      "time": 54.85,
+      "text": "They said I'd never make it this far"
+    },
+    {
+      "time": 58.25,
+      "text": "Look at me now I'm a shooting star"
+    },
+    {
+      "time": 61.11,
+      "text": "Grinding every day till I see the light"
+    },
+    {
+      "time": 64.55,
+      "text": "Victory tastes so sweet tonight"
+    },
+    {
+      "time": 67.64,
+      "text": "Started from the bottom now I'm here"
+    },
+    {
+      "time": 71.20,
+      "text": "Every loss just made the vision clear"
+    },
+    {
+      "time": 74.08,
+      "text": "They tried to count me out but I persevere"
+    },
+    {
+      "time": 78.00,
+      "text": "Now I'm winning and the crown is near"
+    },
+    {
+      "time": 81.08,
+      "text": "Win win win win"
+    },
+    {
+      "time": 84.22,
+      "text": "That's all I do"
+    },
+    {
+      "time": 87.81,
+      "text": "Win win win win"
+    },
+    {
+      "time": 92.65,
+      "text": "I'm coming through"
     }
   ]
 }

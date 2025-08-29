@@ -1,59 +1,102 @@
 {
-  "songId": "travis_ride_with_you",
   "title": "Ride With You",
   "artist": "Travis Scott",
   "lyrics": [
     {
-      "time": 0.0,
-      "text": "Yeah, yeah, yeah"
+      "time": 2.02,
+      "text": "Baby girl you got me floating high"
     },
     {
-      "time": 2.5,
-      "text": "Ride with you, ride with you"
+      "time": 5.36,
+      "text": "Never felt this way before tonight"
     },
     {
-      "time": 5.0,
-      "text": "Through the night, through the night"
+      "time": 8.23,
+      "text": "Got me singing melodies so right"
     },
     {
-      "time": 7.5,
-      "text": "We gon' make it right"
+      "time": 12.02,
+      "text": "You're the reason I can touch the light"
     },
     {
-      "time": 10.0,
-      "text": "High energy, atmospheric beats"
+      "time": 15.01,
+      "text": "Met you at the party late that night"
     },
     {
-      "time": 12.5,
-      "text": "Autotune vocals, that's the heat"
+      "time": 18.19,
+      "text": "Something bout your energy felt right"
     },
     {
-      "time": 15.0,
-      "text": "Ride with you, ride with you"
+      "time": 21.26,
+      "text": "Now we cruising through the city lights"
     },
     {
-      "time": 17.5,
-      "text": "Through the night, through the night"
+      "time": 24.49,
+      "text": "Every moment with you feels so bright"
     },
     {
-      "time": 20.0,
-      "text": "We gon' make it right"
+      "time": 27.71,
+      "text": "Got me writing songs about your smile"
     },
     {
-      "time": 22.5,
-      "text": "Yeah, yeah, yeah"
+      "time": 30.81,
+      "text": "Haven't felt this good in quite a while"
     },
     {
-      "time": 25.0,
-      "text": "Ride with you, ride with you"
+      "time": 34.13,
+      "text": "Tell me that you'll stay here for a while"
     },
     {
-      "time": 27.5,
-      "text": "Through the night, through the night"
+      "time": 37.07,
+      "text": "Girl you got me going extra wild"
     },
     {
-      "time": 30.0,
-      "text": "We gon' make it right"
+      "time": 40,
+      "text": "Yeah yeah yeah"
+    },
+    {
+      "time": 45,
+      "text": "You know what it is"
+    },
+    {
+      "time": 47.53,
+      "text": "When we together"
+    },
+    {
+      "time": 49,
+      "text": "Nothing else exists"
+    },
+    {
+      "time": 53,
+      "text": "Baby girl you got me floating high"
+    },
+    {
+      "time": 56.45,
+      "text": "Never felt this way before tonight"
+    },
+    {
+      "time": 59.56,
+      "text": "Got me singing melodies so right"
+    },
+    {
+      "time": 62.88,
+      "text": "You're the reason I can touch the light"
+    },
+    {
+      "time": 67.34,
+      "text": "La la la la"
+    },
+    {
+      "time": 70.24,
+      "text": "We go up up up"
+    },
+    {
+      "time": 73.53,
+      "text": "La la la la"
+    },
+    {
+      "time": 75.59,
+      "text": "Never coming down"
     }
   ]
 }
