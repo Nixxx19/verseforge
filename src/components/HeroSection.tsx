@@ -34,8 +34,30 @@ const HeroSection = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const [showTemperatureInfo, setShowTemperatureInfo] = useState(false);
+  const [showBalanceInfo, setShowBalanceInfo] = useState(false);
+  const [temperatureValue, setTemperatureValue] = useState(1.7);
+  const [balanceValue, setBalanceValue] = useState(0.7);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Handle temperature value change
+  const handleTemperatureChange = (increment: boolean) => {
+    if (increment) {
+      setTemperatureValue(prev => Math.min(2, prev + 0.1));
+    } else {
+      setTemperatureValue(prev => Math.max(1.5, prev - 0.1));
+    }
+  };
+
+  // Handle balance value change
+  const handleBalanceChange = (increment: boolean) => {
+    if (increment) {
+      setBalanceValue(prev => Math.min(2, prev + 0.1));
+    } else {
+      setBalanceValue(prev => Math.max(0, prev - 0.1));
+    }
+  };
 
   // Generate suggestions based on input
   const generateSuggestions = (input: string) => {
@@ -121,7 +143,7 @@ const HeroSection = () => {
     }
   };
 
-  // Close suggestions when clicking outside
+  // Close suggestions and info boxes when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -132,6 +154,13 @@ const HeroSection = () => {
       ) {
         setShowSuggestions(false);
         setSelectedSuggestionIndex(-1);
+      }
+      
+      // Close info boxes when clicking outside
+      const target = event.target as Element;
+      if (!target.closest('.info-button') && !target.closest('.info-popup')) {
+        setShowTemperatureInfo(false);
+        setShowBalanceInfo(false);
       }
     };
 
@@ -314,10 +343,83 @@ const HeroSection = () => {
               placeholder="Describe your musical vision as a creative prompt... "
               className="flex-1 bg-transparent border-none text-white placeholder:text-white/70 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl font-light"
             />
+            
+            {/* Info Boxes - Only show when there's text */}
+            {inputValue.trim() && (
+              <div className="flex gap-2">
+                <div className="flex items-center gap-1">
+                  <span className="px-3 py-2 bg-white/20 rounded-lg text-white/80 text-xs font-medium border border-white/10 flex items-center gap-1">
+                    Temperature
+                    <button
+                      onClick={() => setShowTemperatureInfo(!showTemperatureInfo)}
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 info-button"
+                      title="Temperature Info"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                      </svg>
+                    </button>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="px-2 py-1.5 bg-white/10 rounded text-white/80 text-xs">{temperatureValue.toFixed(1)}</span>
+                    <div className="flex flex-col">
+                      <button 
+                        onClick={() => handleTemperatureChange(true)}
+                        className="w-3 h-3 bg-white/20 hover:bg-white/30 rounded-t-sm flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 text-xs"
+                      >
+                        ▲
+                      </button>
+                      <button 
+                        onClick={() => handleTemperatureChange(false)}
+                        className="w-3 h-3 bg-white/20 hover:bg-white/30 rounded-b-sm flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 text-xs"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="px-3 py-2 bg-white/20 rounded-lg text-white/80 text-xs font-medium border border-white/10 flex items-center gap-1">
+                    Balance
+                    <button
+                      onClick={() => setShowBalanceInfo(!showBalanceInfo)}
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 info-button"
+                      title="Balance Info"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                      </svg>
+                    </button>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="px-2 py-1.5 bg-white/10 rounded text-white/80 text-xs">{balanceValue.toFixed(1)}</span>
+                    <div className="flex flex-col">
+                      <button 
+                        onClick={() => handleBalanceChange(true)}
+                        className="w-3 h-3 bg-white/20 hover:bg-white/30 rounded-t-sm flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 text-xs"
+                      >
+                        ▲
+                      </button>
+                      <button 
+                        onClick={() => handleBalanceChange(false)}
+                        className="w-3 h-3 bg-white/20 hover:bg-white/30 rounded-b-sm flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 text-xs"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <Button 
               variant="create" 
-              size="lg" 
-              className="px-12 rounded-xl font-semibold text-lg shadow-glow hover:scale-100 active:scale-100 transform-none"
+              size="default" 
+              className="px-6 rounded-xl font-semibold text-base shadow-glow hover:scale-100 active:scale-100 transform-none"
               onClick={() => {
                 if (!isSignedIn) {
                   setIsSignInDialogOpen(true);
@@ -344,7 +446,26 @@ const HeroSection = () => {
           {showError && (
             <div className="mt-3 text-center">
               <p className="text-red-400 text-sm font-medium">
-                ⚠️ Please enter a prompt before generating
+                Please enter a prompt before generating
+              </p>
+            </div>
+          )}
+
+          {/* Info Popups */}
+          {showTemperatureInfo && (
+            <div className="absolute top-full left-1/4 -mt-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-2 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
+              <h4 className="text-white font-semibold text-sm mb-1">Temperature</h4>
+              <p className="text-white/80 text-xs leading-relaxed">
+                Controls how strongly your prompt influences the output. We recommend 0.7 for balanced output.
+              </p>
+            </div>
+          )}
+
+          {showBalanceInfo && (
+            <div className="absolute bottom-full right-1/4 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-1.5 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
+              <h4 className="text-white font-semibold text-sm mb-0.5">Balance</h4>
+              <p className="text-white/80 text-xs leading-relaxed">
+                Greater means more natural vocals. We recommend 0.7 for balanced vocals.
               </p>
             </div>
           )}
@@ -353,7 +474,7 @@ const HeroSection = () => {
           {showSuggestions && suggestions.length > 0 && (
             <div 
               ref={suggestionsRef}
-              className="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-glass overflow-hidden z-50 max-h-36 overflow-y-auto"
+              className="absolute top-full left-0 right-0 -mt-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-glass overflow-hidden z-50 max-h-36 overflow-y-auto"
             >
               {suggestions.map((suggestion, index) => (
                 <div
