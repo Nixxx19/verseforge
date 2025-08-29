@@ -327,7 +327,7 @@ const HeroSection = () => {
           </h1>
         </div>
         
-        <p className="text-white/90 text-xl md:text-xl mb-16 max-w-2xl mx-auto font-light leading-relaxed">
+        <p className="text-white/90 text-xl md:text-xl mb-16 max-w-2xl mx-auto font-light leading-relaxed mt-12">
           The world's most advanced AI music creation platform. Transform any idea into professional-quality music in seconds.
         </p>
 
@@ -350,17 +350,17 @@ const HeroSection = () => {
                 <div className="flex items-center gap-1">
                   <span className="px-3 py-2 bg-white/20 rounded-lg text-white/80 text-xs font-medium border border-white/10 flex items-center gap-1">
                     Temperature
-                    <button
-                      onClick={() => setShowTemperatureInfo(!showTemperatureInfo)}
-                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 info-button"
-                      title="Temperature Info"
+                    <span 
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 cursor-pointer"
+                      onMouseEnter={() => setShowTemperatureInfo(true)}
+                      onMouseLeave={() => setShowTemperatureInfo(false)}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M12 16v-4"/>
                         <path d="M12 8h.01"/>
                       </svg>
-                    </button>
+                    </span>
                   </span>
                   <div className="flex items-center gap-1">
                     <span className="px-2 py-1.5 bg-white/10 rounded text-white/80 text-xs">{temperatureValue.toFixed(1)}</span>
@@ -383,17 +383,17 @@ const HeroSection = () => {
                 <div className="flex items-center gap-1">
                   <span className="px-3 py-2 bg-white/20 rounded-lg text-white/80 text-xs font-medium border border-white/10 flex items-center gap-1">
                     Balance
-                    <button
-                      onClick={() => setShowBalanceInfo(!showBalanceInfo)}
-                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 info-button"
-                      title="Balance Info"
+                    <span 
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 cursor-pointer"
+                      onMouseEnter={() => setShowBalanceInfo(true)}
+                      onMouseLeave={() => setShowBalanceInfo(false)}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M12 16v-4"/>
                         <path d="M12 8h.01"/>
                       </svg>
-                    </button>
+                    </span>
                   </span>
                   <div className="flex items-center gap-1">
                     <span className="px-2 py-1.5 bg-white/10 rounded text-white/80 text-xs">{balanceValue.toFixed(1)}</span>
@@ -453,7 +453,7 @@ const HeroSection = () => {
 
           {/* Info Popups */}
           {showTemperatureInfo && (
-            <div className="absolute top-full left-1/4 -mt-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-2 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
+            <div className="absolute bottom-full left-1/4 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-2 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
               <h4 className="text-white font-semibold text-sm mb-1">Temperature</h4>
               <p className="text-white/80 text-xs leading-relaxed">
                 Controls how strongly your prompt influences the output. We recommend 0.7 for balanced output.
@@ -462,7 +462,7 @@ const HeroSection = () => {
           )}
 
           {showBalanceInfo && (
-            <div className="absolute bottom-full right-1/4 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-1.5 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
+            <div className="absolute bottom-full right-20 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-1.5 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
               <h4 className="text-white font-semibold text-sm mb-0.5">Balance</h4>
               <p className="text-white/80 text-xs leading-relaxed">
                 Greater means more natural vocals. We recommend 0.7 for balanced vocals.
