@@ -2,10 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Music, ChevronRight, Sparkles, Volume2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateSection = () => {
   const [lyrics, setLyrics] = useState("");
   const [selectedMode, setSelectedMode] = useState("Auto");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <section id="create" className="py-16 bg-gradient-hero relative overflow-hidden scroll-mt-20">
@@ -107,8 +110,43 @@ const CreateSection = () => {
               variant="create" 
               size="lg" 
               className="w-full text-xl py-6 rounded-2xl font-bold shadow-warm hover:shadow-[0_20px_40px_-12px_rgba(255,107,53,0.6)] transition-all duration-300 hover:scale-[1.02]"
+              onClick={async () => {
+                if (!lyrics.trim()) {
+                  alert('Please enter a prompt for lyrics generation');
+                  return;
+                }
+                
+                setIsGenerating(true);
+                
+                try {
+                  const response = await fetch('http://localhost:3001/api/generate', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: lyrics }),
+                  });
+                  
+                  const data = await response.json();
+                  
+                  if (data.success) {
+                    console.log('Generated text:', data.generatedText);
+                    // Navigate to generate page after successful API call
+                    navigate('/generate');
+                  } else {
+                    console.error('Generation failed:', data.error);
+                    alert('Generation failed. Please try again.');
+                  }
+                } catch (error) {
+                  console.error('Error calling backend:', error);
+                  alert('Error connecting to server. Please try again.');
+                } finally {
+                  setIsGenerating(false);
+                }
+              }}
+              disabled={isGenerating}
             >
-              Create
+              {isGenerating ? 'Generating...' : 'Create'}
             </Button>
           </div>
         </div>

@@ -20,6 +20,8 @@ const GeneratePage = () => {
     }
   }, [isSignedIn, isLoaded, user]);
 
+ 
+
   return (
     <section className="min-h-screen bg-gradient-hero relative overflow-hidden pt-14">
       {/* Background decorative elements */}
