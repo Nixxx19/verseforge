@@ -1,44 +1,138 @@
 import OpenAI from "openai";
+import axios from "axios";
+import 'dotenv/config';
+import fs from "fs";
 
-// Check if API key is available
-if (!process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
-  console.error("Error: OPENROUTER_API_KEY or OPENAI_API_KEY environment variable is required");
-  console.log("Please set your API key:");
-  console.log("export OPENROUTER_API_KEY=your_api_key_here");
-  process.exit(1);
-}
-
+// --- OpenAI client setup ---
 const client = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY, 
+  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
   baseURL: "https://openrouter.ai/api/v1",
 });
 
-async function generateLyrics(artist, theme, temperature = 0.8) {
+// --- Lyrics generation function ---
+async function generateLyrics(userInput, temperature = 0.8) {
 const systemPrompt = `
-You are a creative song lyrics generator. Write a complete song based on the user's input.
-• If the user specifies an artist or style, replicate that artist's lyrical voice, flow, vocabulary, rhyme schemes, themes, and tone with 90 to 95 perecent stylistic accuracy, while keeping the lyrics fully original. Prioritize their cadence, mood, and recurring motifs over generic songwriting.
-• If no artist is specified, create the song in a versatile, creative style.
-• Always structure the song with verses, a catchy and repeatable chorus, and an optional bridge/outro.
-• Use vivid imagery, clever wordplay, emotional depth, and natural rhythmic phrasing so the lyrics feel authentic when sung or rapped.
-• Follow the user's prompt closely, respecting the requested creativity level (temperature).
-• Output only the lyrics with clear section labels (e.g., Verse 1, Chorus, Verse 2, Bridge, Outro).
-• Goal: The output should feel indistinguishable from a new, authentic song by the requested artist, not just loosely inspired by them.
+You are an expert song lyrics generator with a deep understanding of musical styles, artist voices, and lyrical structures. Your goal is to write complete, original, and emotionally engaging songs based on the user's input. Follow these instructions carefully:
+
+1. Detect if the user mentioned an artist. If so, emulate their lyrical voice, flow, vocabulary, rhyme schemes, recurring themes, cadence, and tone with 90-95% stylistic accuracy.
+2. Identify the main theme, topic, or mood of the song from the user's input.
+3. Organize lyrics into clear sections: Chorus, Post-Chorus, Verse 2, Pre-Chorus, Chorus, Post-Chorus.
+4. Make lyrics simple, rhythmic, and easy to sing. Avoid long sentences or overly complex phrasing that may be hard for TTS to vocalize.
+5. Use repetition in choruses and post-choruses to make it melodic and catchy.
+6. Use vivid imagery, clever wordplay, and relatable emotions, but prioritize singability over literary complexity.
+7. Ensure each line has a natural syllable flow suitable for singing.
+8. Output only the lyrics with clear section labels, no explanations or commentary.
 `;
-    
 
   const response = await client.chat.completions.create({
-    model: "meta-llama/llama-3.3-8b-instruct:free", 
-    temperature: temperature,
+    model: "meta-llama/llama-3.3-8b-instruct:free",
+    temperature,
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `Write a song in the style of ${artist} about ${theme}.` },
+      { role: "user", content: `User input: "${userInput}"` },
     ],
   });
 
   return response.choices[0].message.content;
 }
 
-// Example usage:
-generateLyrics("Drake", "Late-night reflection on success, loneliness, and trust issues with friends & relationships.").then((lyrics) =>
-  console.log(lyrics)
-);
+// --- TTS function ---
+async function generateAudioWithSonauto({
+    lyrics,
+    prompt,
+    outputFormat = "mp3",
+    balanceStrength = 1.0,
+    promptStrength = 1.49,
+    bpm = 138
+  }) {
+    const sonaApiKey = process.env.SUNAOTO_API_KEY;
+    if (!sonaApiKey) throw new Error("Set your SUNAOTO_API_KEY environment variable!");
+  
+    try {
+      // Decide instrumental based on balanceStrength
+      const instrumental = balanceStrength < 0.1;
+  
+      const payload = {
+        lyrics: lyrics,
+        prompt: prompt,
+        instrumental: instrumental,
+        balance_strength: balanceStrength,
+        prompt_strength: promptStrength, // fixed at 1.49
+        output_format: outputFormat,
+        bpm: bpm, // fixed at 138
+        num_songs: 2
+      };
+  
+      const response = await axios.post(
+        "https://api.sonauto.ai/v1/generations",
+        payload,
+        {
+          headers: {
+            "Authorization": `Bearer ${sonaApiKey}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+  
+      const taskId = response.data.task_id;
+      console.log("Sonauto task ID:", taskId);
+  
+      let finalLyrics = null;
+      let songUrls = [];
+  
+      while (songUrls.length === 0) {
+        await new Promise(res => setTimeout(res, 3000));
+        const statusRes = await axios.get(
+          `https://api.sonauto.ai/v1/generations/${taskId}`,
+          { headers: { "Authorization": `Bearer ${sonaApiKey}` } }
+        );
+  
+        const status = statusRes.data.status;
+        console.log("Status:", status);
+  
+        if (status === "SUCCESS") {
+          songUrls = statusRes.data.song_paths;
+          finalLyrics = statusRes.data.lyrics;
+          console.log("Final lyrics generated by TTS:\n", finalLyrics);
+          console.log("Final tags used:", statusRes.data.tags);
+  
+          // Save all generated songs
+          for (let i = 0; i < songUrls.length; i++) {
+            const audioResponse = await axios.get(songUrls[i], { responseType: "arraybuffer" });
+            fs.writeFileSync(`song_${i + 1}.mp3`, audioResponse.data);
+            console.log(`Audio saved as song_${i + 1}.mp3`);
+          }
+        } else if (status === "FAILURE") {
+          throw new Error("Sonauto generation failed: " + statusRes.data.error_message);
+        }
+      }
+  
+      return finalLyrics;
+    } catch (err) {
+      console.error("Error generating audio with Sonauto:", err.response?.data || err.message);
+    }
+  }
+  
+
+// --- Full pipeline ---
+async function main() {
+  const userInput = "create a taylor swift song about love";
+
+  // Step 1: Generate lyrics
+  const lyrics = await generateLyrics(userInput);
+  console.log("Original LLaMA Lyrics:\n", lyrics);
+
+  // Step 2: Generate TTS audio with custom parameters
+  const modifiedLyrics = await generateAudioWithSonauto({
+    lyrics:lyrics,
+    prompt: userInput,
+    outputFormat: "mp3",
+    balanceStrength: 1.0,
+    promptStrength: 1.5,
+    bpm: 135
+  });
+
+  console.log("\n=== TTS Modified Lyrics ===\n", modifiedLyrics);
+}
+
+main();
