@@ -16,7 +16,7 @@ You are an expert song lyrics generator with a deep understanding of musical sty
 
 1. Detect if the user mentioned an artist. If so, emulate their lyrical voice, flow, vocabulary, rhyme schemes, recurring themes, cadence, and tone with 90-95% stylistic accuracy.
 2. Identify the main theme, topic, or mood of the song from the user's input.
-3. Organize lyrics into clear sections: Chorus, Post-Chorus, Verse 2, Pre-Chorus, Chorus, Post-Chorus.
+3. You should follow a structure like [Chorus] [Post-Chorus] [Verse 2] [Pre-Chorus] [Chorus] [Post-Chorus]. You can swap out the [Post-Chorus] with a [Drop] if you are doing EDM. The Post-Chorus should be 2 short lines and everything else should be 4 lines.
 4. Make lyrics simple, rhythmic, and easy to sing. Avoid long sentences or overly complex phrasing that may be hard for TTS to vocalize.
 5. Use repetition in choruses and post-choruses to make it melodic and catchy.
 6. Use vivid imagery, clever wordplay, and relatable emotions, but prioritize singability over literary complexity.
@@ -31,7 +31,7 @@ You are an expert song lyrics generator with a deep understanding of musical sty
 
   const response = await client.chat.completions.create({
     model: "meta-llama/llama-3.3-8b-instruct:free",
-    temperature, // user-provided temperature is used here
+    temperature,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `User input: "${userInput}"` },
@@ -44,22 +44,25 @@ You are an expert song lyrics generator with a deep understanding of musical sty
 // --- TTS function ---
 async function generateAudioWithSonauto({
     prompt,
-    outputFormat = "mp3",
+    bpm = 135,
     balanceStrength = 0.9,
-    bpm = 130, // fixed at 137 to increase the output quality
-    promptStrength = 1.50, // fixed value for TTS to maximise the output
+    promptStrength = 1.56,
+    outputFormat = "mp3",
   }) {
     const sonaApiKey = process.env.SUNAOTO_API_KEY;
     if (!sonaApiKey) throw new Error("Set your SUNAOTO_API_KEY environment variable!");
   
     try {
       const instrumental = balanceStrength < 0.1;
-  
+
+      // 🔹 Add random suffix to avoid style caching between generations
+      const cacheBuster = `\n\n[SessionID:${Date.now()}-${Math.floor(Math.random() * 10000)}]`;
+
       const payload = {          
-        prompt: prompt,         
-        instrumental: instrumental,
+        prompt: prompt + cacheBuster,         
+        instrumental,
         balance_strength: balanceStrength,
-        bpm: bpm,
+        bpm,
         prompt_strength: promptStrength,
         num_songs: 2
       };
@@ -78,8 +81,8 @@ async function generateAudioWithSonauto({
       const taskId = response.data.task_id;
       console.log("Sonauto task ID:", taskId);
   
-      let finalLyrics = null;
       let songUrls = [];
+      let finalLyrics = null;
   
       while (songUrls.length === 0) {
         await new Promise(res => setTimeout(res, 3000));
@@ -107,7 +110,7 @@ async function generateAudioWithSonauto({
         }
       }
 
-      return instrumental ? null : finalLyrics;
+      return finalLyrics;
 
     } catch (err) {
       console.error("Error generating audio with Sonauto:", err.response?.data || err.message);
@@ -116,22 +119,30 @@ async function generateAudioWithSonauto({
   
 // --- Full pipeline ---
 async function main() {
-  const userInput = "frank ocean song";
-  const userTemperature = 0.8; // user-provided temperature for LLaMA
-  const balanceStrength = 0.9; // user-provided for TTS
+  // User settings
+  const userInput = "Taylor Swift song about coffee";
+  const userTemperature = 0.8;   // controls lyrics creativity
+  const userBpm = 140;           // user BPM for TTS
+  const userBalance = 0.95;      // balance strength for TTS
 
-  // Step 1: Generate lyrics (optional / reference for karaoke)
+  // Step 1: Generate lyrics
   const lyrics = await generateLyrics(userInput, userTemperature);
   console.log("Original LLaMA Lyrics (reference):\n", lyrics);
 
-  // Step 2: Generate TTS audio only from prompt
+  // Step 2: Build combined TTS prompt (user input + lyrics)
+  const ttsPrompt = `${userInput}\n\nLyrics:\n${lyrics}`;
+
+  // 🔹 NEW LOG: show exactly what is sent to TTS
+  console.log("\n=== Prompt sent to TTS ===\n", ttsPrompt);
+
+  // Step 3: Generate audio
   const ttsLyrics = await generateAudioWithSonauto({
-    lyrics: lyrics,
-    prompt: userInput,
-    balanceStrength: balanceStrength,
+    prompt: ttsPrompt,
+    bpm: userBpm,
+    balanceStrength: userBalance,
   });
 
-  if (balanceStrength < 0.1) {
+  if (userBalance < 0.1) {
     console.log("\n=== Karaoke Lyrics (from LLaMA) ===\n", lyrics);
   } else {
     console.log("\n=== TTS Generated Lyrics ===\n", ttsLyrics);
