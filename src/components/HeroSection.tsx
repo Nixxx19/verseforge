@@ -36,8 +36,10 @@ const HeroSection = () => {
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const [showTemperatureInfo, setShowTemperatureInfo] = useState(false);
   const [showBalanceInfo, setShowBalanceInfo] = useState(false);
+  const [showBpmInfo, setShowBpmInfo] = useState(false);
   const [temperatureValue, setTemperatureValue] = useState(1.7);
   const [balanceValue, setBalanceValue] = useState(0.7);
+  const [bpmValue, setBpmValue] = useState(120);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
@@ -56,6 +58,15 @@ const HeroSection = () => {
       setBalanceValue(prev => Math.min(2, prev + 0.1));
     } else {
       setBalanceValue(prev => Math.max(0, prev - 0.1));
+    }
+  };
+
+  // Handle BPM value change
+  const handleBpmChange = (increment: boolean) => {
+    if (increment) {
+      setBpmValue(prev => Math.min(300, prev + 10));
+    } else {
+      setBpmValue(prev => Math.max(120, prev - 10));
     }
   };
 
@@ -161,6 +172,7 @@ const HeroSection = () => {
       if (!target.closest('.info-button') && !target.closest('.info-popup')) {
         setShowTemperatureInfo(false);
         setShowBalanceInfo(false);
+        setShowBpmInfo(false);
       }
     };
 
@@ -332,7 +344,7 @@ const HeroSection = () => {
         </p>
 
         {/* Premium Search Input */}
-        <div className="max-w-3xl mx-auto mb-12 relative">
+        <div className="max-w-[55rem] mx-auto mb-12 relative">
           <div className="relative flex items-center gap-4 bg-white/10 backdrop-blur-glass border border-white/30 rounded-2xl p-4 shadow-glass hover:border-white/50 transition-all duration-300">
             <Music className="text-white/80 w-6 h-6 ml-3" />
             <Input 
@@ -413,6 +425,39 @@ const HeroSection = () => {
                     </div>
                   </div>
                 </div>
+                <div className="flex items-center gap-1">
+                  <span className="px-3 py-2 bg-white/20 rounded-lg text-white/80 text-xs font-medium border border-white/10 flex items-center gap-1">
+                    BPM
+                    <span 
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-white/80 transition-all duration-200 cursor-pointer"
+                      onMouseEnter={() => setShowBpmInfo(true)}
+                      onMouseLeave={() => setShowBpmInfo(false)}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="px-2 py-1.5 bg-white/10 rounded text-white/80 text-xs">{bpmValue}</span>
+                                         <div className="flex flex-col">
+                       <button 
+                         onClick={() => handleBpmChange(true)}
+                         className="w-3 h-3 bg-white/20 hover:bg-white/30 rounded-t-sm flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 text-xs"
+                       >
+                         ▲
+                       </button>
+                       <button 
+                         onClick={() => handleBpmChange(false)}
+                         className="w-3 h-3 bg-white/20 hover:bg-white/30 rounded-b-sm flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 text-xs"
+                       >
+                         ▼
+                       </button>
+                     </div>
+                  </div>
+                </div>
               </div>
             )}
             
@@ -456,16 +501,25 @@ const HeroSection = () => {
             <div className="absolute bottom-full left-1/4 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-2 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
               <h4 className="text-white font-semibold text-sm mb-1">Temperature</h4>
               <p className="text-white/80 text-xs leading-relaxed">
-                Controls how strongly your prompt influences the output. We recommend 0.7 for balanced output.
+                Controls how strongly your prompt influences the output. We recommend 0.8 for balanced output.
               </p>
             </div>
           )}
 
-          {showBalanceInfo && (
-            <div className="absolute bottom-full right-20 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-1.5 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
+                    {showBalanceInfo && (
+            <div className="absolute bottom-full right-60 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-1.5 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
               <h4 className="text-white font-semibold text-sm mb-0.5">Balance</h4>
               <p className="text-white/80 text-xs leading-relaxed">
                 Greater means more natural vocals. We recommend 0.7 for balanced vocals.
+              </p>
+            </div>
+          )}
+
+          {showBpmInfo && (
+            <div className="absolute bottom-full right-24 mb-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-glass p-1.5 z-50 w-64 h-24 info-popup flex flex-col items-center justify-center text-center">
+              <h4 className="text-white font-semibold text-sm mb-0.5">BPM</h4>
+              <p className="text-white/80 text-xs leading-relaxed">
+                Determines beats per minute you need in your song. We recommend 120 for a balanced feel.
               </p>
             </div>
           )}

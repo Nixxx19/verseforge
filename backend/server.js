@@ -120,10 +120,10 @@ async function generateAudioWithSonauto({
 // --- Full pipeline ---
 async function main() {
   // User settings
-  const userInput = "Taylor Swift song about coffee";
+  const userInput = "";
   const userTemperature = 0.8;   // controls lyrics creativity
-  const userBpm = 140;           // user BPM for TTS
-  const userBalance = 0.95;      // balance strength for TTS
+  const userBpm = 135;           // user BPM for TTS
+  const userBalance = 1.0;      // balance strength for TTS
 
   // Step 1: Generate lyrics
   const lyrics = await generateLyrics(userInput, userTemperature);
@@ -133,11 +133,11 @@ async function main() {
   const ttsPrompt = `${userInput}\n\nLyrics:\n${lyrics}`;
 
   // 🔹 NEW LOG: show exactly what is sent to TTS
-  console.log("\n=== Prompt sent to TTS ===\n", ttsPrompt);
+  console.log("\n=== Prompt & Lyrcis sent to TTS ===\n", ttsPrompt);
 
   // Step 3: Generate audio
   const ttsLyrics = await generateAudioWithSonauto({
-    prompt: ttsPrompt,
+    prompt: ttsPrompt, // lyrcis and prompt togther sent to TTS so output is more accurate and better
     bpm: userBpm,
     balanceStrength: userBalance,
   });
