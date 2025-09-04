@@ -37,8 +37,8 @@ const HeroSection = () => {
   const [showTemperatureInfo, setShowTemperatureInfo] = useState(false);
   const [showBalanceInfo, setShowBalanceInfo] = useState(false);
   const [showBpmInfo, setShowBpmInfo] = useState(false);
-  const [temperatureValue, setTemperatureValue] = useState(1.7);
-  const [balanceValue, setBalanceValue] = useState(0.7);
+  const [temperatureValue, setTemperatureValue] = useState(0.8);
+  const [balanceValue, setBalanceValue] = useState(0.8);
   const [bpmValue, setBpmValue] = useState(120);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -46,9 +46,9 @@ const HeroSection = () => {
   // Handle temperature value change
   const handleTemperatureChange = (increment: boolean) => {
     if (increment) {
-      setTemperatureValue(prev => Math.min(2, prev + 0.1));
+      setTemperatureValue(prev => Math.min(1, prev + 0.1));
     } else {
-      setTemperatureValue(prev => Math.max(1.5, prev - 0.1));
+      setTemperatureValue(prev => Math.max(0, prev - 0.1));
     }
   };
 
@@ -316,6 +316,31 @@ const HeroSection = () => {
     return () => clearInterval(cursorInterval);
   }, []);
 
+  // Handle song generation
+  const handleGenerateSong = async () => {
+    if (!inputValue.trim()) {
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+      return;
+    }
+
+    if (!isSignedIn) {
+      setIsSignInDialogOpen(true);
+      return;
+    }
+
+    // Navigate to generate page with the prompt and start generation
+    navigate('/generate', {
+      state: {
+        prompt: inputValue,
+        temperature: temperatureValue,
+        balance: balanceValue,
+        bpm: bpmValue,
+        isGenerating: true
+      }
+    });
+  };
+
   return (
     <section className="min-h-screen bg-gradient-hero relative overflow-hidden flex items-center justify-center pt-14">
       {/* Background decorative elements */}
@@ -465,23 +490,7 @@ const HeroSection = () => {
               variant="create" 
               size="default" 
               className="px-6 rounded-xl font-semibold text-base shadow-glow hover:scale-100 active:scale-100 transform-none"
-              onClick={() => {
-                if (!isSignedIn) {
-                  setIsSignInDialogOpen(true);
-                  return;
-                }
-                
-                if (!inputValue.trim()) {
-                  setShowError(true);
-                  // Hide error after 3 seconds
-                  setTimeout(() => setShowError(false), 3000);
-                  return;
-                }
-                
-                // Clear any existing error
-                setShowError(false);
-                navigate('/generate');
-              }}
+              onClick={handleGenerateSong}
             >
               Generate
             </Button>

@@ -1,7 +1,20 @@
 import OpenAI from "openai";
 import axios from "axios";
-import 'dotenv/config';
+import dotenv from "dotenv";
+dotenv.config();
 import fs from "fs";
+import express from "express";
+import cors from "cors";
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Middleware
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
+app.use(express.json());
 
 // --- OpenAI client setup ---
 const client = new OpenAI({
@@ -44,8 +57,8 @@ You are an expert song lyrics generator with a deep understanding of musical sty
 // --- TTS function ---
 async function generateAudioWithSonauto({
     prompt,
-    bpm = 135,
-    balanceStrength = 0.9,
+    bpm = 120,
+    balanceStrength = 0.8,
     promptStrength = 1.56,
     outputFormat = "mp3",
   }) {
@@ -53,7 +66,7 @@ async function generateAudioWithSonauto({
     if (!sonaApiKey) throw new Error("Set your SUNAOTO_API_KEY environment variable!");
   
     try {
-      const instrumental = balanceStrength < 0.1;
+      const instrumental = balanceStrength <= 0.15;
 
       // 🔹 Add random suffix to avoid style caching between generations
       const cacheBuster = `\n\n[SessionID:${Date.now()}-${Math.floor(Math.random() * 10000)}]`;
@@ -116,14 +129,79 @@ async function generateAudioWithSonauto({
       console.error("Error generating audio with Sonauto:", err.response?.data || err.message);
     }
   }
+
+// --- API Endpoints ---
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'VerseForge API is running' });
+});
+
+// Song generation endpoint
+app.post('/generate', async (req, res) => {
+  try {
+    const { userInput, temperature = 0.8, bpm = 135, balance = 1.0 } = req.body;
+    
+    if (!userInput) {
+      return res.status(400).json({ error: 'userInput is required' });
+    }
+
+    console.log('Starting song generation with:', { userInput, temperature, bpm, balance });
+
+    // Step 1: Generate lyrics
+    const lyrics = await generateLyrics(userInput, temperature);
+    console.log("Generated lyrics:", lyrics);
+
+    // Step 2: Build combined TTS prompt
+    const ttsPrompt = `${userInput}\n\nLyrics:\n${lyrics}`;
+
+    // Step 3: Generate audio
+    const ttsLyrics = await generateAudioWithSonauto({
+      prompt: ttsPrompt,
+      bpm: bpm,
+      balanceStrength: balance,
+    });
+
+    // Return the results
+    res.json({
+      lyrics: lyrics,
+      ttsLyrics: ttsLyrics,
+      audioFiles: ['song_1.mp3', 'song_2.mp3']
+    });
+
+  } catch (error) {
+    console.error('Error in song generation:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate song',
+      details: error.message 
+    });
+  }
+});
+
+// Serve generated audio files
+app.get('/audio/:filename', (req, res) => {
+  const { filename } = req.params;
+  const filePath = `./${filename}`;
   
-// --- Full pipeline ---
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath, { root: '.' });
+  } else {
+    res.status(404).json({ error: 'Audio file not found' });
+  }
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`VerseForge API server running on port ${PORT}`);
+});
+
+// --- Legacy main function (for testing) ---
 async function main() {
   // User settings
-  const userInput = "";
-  const userTemperature = 0.8;   // controls lyrics creativity
-  const userBpm = 135;           // user BPM for TTS
-  const userBalance = 1.0;      // balance strength for TTS
+  const userInput = "jazz song about christmas";
+  const userTemperature = 0.8;  // controls lyrics creativity
+  const userBpm = 135;         // user BPM for TTS
+  const userBalance = 1.0;    // balance strength for TTS
 
   // Step 1: Generate lyrics
   const lyrics = await generateLyrics(userInput, userTemperature);
@@ -149,4 +227,5 @@ async function main() {
   }
 }
 
-main();
+// Uncomment to run main function for testing
+// main();
