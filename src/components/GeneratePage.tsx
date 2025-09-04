@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Swords, Plus } from "lucide-react";
+import { Swords, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUser } from '@clerk/clerk-react';
 import UserProfileDropdown from "./UserProfileDropdown";
 import { useState, useEffect } from "react";
@@ -20,6 +20,10 @@ const GeneratePage = () => {
   const [balance, setBalance] = useState(location.state?.balance || 0.7);
   const [bpm, setBpm] = useState(location.state?.bpm || 120);
   const [isGenerating, setIsGenerating] = useState(location.state?.isGenerating !== false);
+  const [generationStatus, setGenerationStatus] = useState('Initializing...');
+  const [progressPercentage, setProgressPercentage] = useState(0);
+  const [backendInfo, setBackendInfo] = useState('');
+  const [currentVariant, setCurrentVariant] = useState(0);
   
   // Update user profile visibility when authentication state changes
   useEffect(() => {
@@ -41,6 +45,9 @@ const GeneratePage = () => {
     if (!prompt) return;
 
     try {
+      setGenerationStatus('Initializing...');
+      setProgressPercentage(5);
+
       const response = await fetch('http://localhost:3001/generate', {
         method: 'POST',
         headers: {
@@ -54,21 +61,45 @@ const GeneratePage = () => {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setGenerationStatus('GENERATING');
+      setProgressPercentage(30);
+
       const data = await response.json();
 
-      if (response.ok) {
+      if (data.error) {
+        console.error('Generation failed:', data.error);
+        alert('Generation failed: ' + data.error);
+        setIsGenerating(false);
+        return;
+      }
+
+      setGenerationStatus('DECOMPRESSING');
+      setProgressPercentage(70);
+
+      // Simulate the final stages based on backend logs
+      setTimeout(() => {
+        setGenerationStatus('SAVING');
+        setProgressPercentage(90);
+      }, 2000);
+
+      setTimeout(() => {
+        setGenerationStatus('SUCCESS');
+        setProgressPercentage(100);
+        
         setGenerationData(data);
         setIsGenerating(false);
+        
         // Store result in sessionStorage for persistence
         sessionStorage.setItem('generationResult', JSON.stringify({
           generationData: data,
           prompt: prompt
         }));
-      } else {
-        console.error('Generation failed:', data.error);
-        alert('Generation failed. Please try again.');
-        setIsGenerating(false);
-      }
+      }, 4000);
+
     } catch (error) {
       console.error('Error calling backend:', error);
       alert('Error connecting to server. Please try again.');
@@ -225,7 +256,7 @@ const GeneratePage = () => {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-20 pb-20">
+      <div className="container mx-auto px-4 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-14 pb-20">
         <div className="text-center max-w-4xl">
           {isGenerating ? (
             <>
@@ -241,7 +272,7 @@ const GeneratePage = () => {
                 </span>
               </h1>
               
-              <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-white/80 text-xl mb-8 max-w-4xl mx-auto leading-relaxed">
                 Our AI is working on your musical vision. This usually takes 15-30 seconds.
               </p>
 
@@ -252,17 +283,22 @@ const GeneratePage = () => {
                     <Plus className="w-10 h-10 text-white" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-white text-xl font-semibold mb-2">Processing...</h3>
-                    <p className="text-white/70 text-base">Analyzing your prompt</p>
+                    <h3 className="text-white text-xl font-semibold mb-2">{generationStatus}</h3>
+                    <p className="text-white/70 text-base">
+                      {backendInfo || 'Working on your musical vision'}
+                    </p>
                   </div>
                 </div>
                 
                 {/* Progress Bar */}
                 <div className="w-full bg-white/20 rounded-full h-4 mb-6">
-                  <div className="bg-gradient-create h-4 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                  <div 
+                    className="bg-gradient-create h-4 rounded-full transition-all duration-500 ease-out" 
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
                 </div>
                 
-                <p className="text-white/60 text-base">Estimated time: 20 seconds</p>
+                <p className="text-white/60 text-base">Estimated time: {progressPercentage < 50 ? '20 seconds' : '10 seconds'}</p>
               </div>
             </>
           ) : (
@@ -279,27 +315,106 @@ const GeneratePage = () => {
                 </span>
               </h1>
               
-              <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-white/80 text-xl mb-8 max-w-4xl mx-auto leading-relaxed">
                 Your AI-generated song has been created successfully!
               </p>
 
-              {/* Simple completion message */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 max-w-2xl mx-auto mb-12">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Plus className="w-10 h-10 text-white" />
-                  </div>
+              {/* Song Output Section */}
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 max-w-4xl mx-auto mb-12">
+                <div className="text-center mb-8">
                   <h3 className="text-white text-xl font-semibold mb-4">Song Generated Successfully</h3>
-                  <p className="text-white/70 text-base">
+                  <p className="text-white/70 text-base mb-6">
                     Your song has been created and saved. You can find it in your VerseVault.
                   </p>
                 </div>
+
+                {/* Audio Players Slider */}
+                {generationData?.audioFiles && generationData.audioFiles.length > 0 && (
+                  <div className="mb-8">
+                    <h4 className="text-white text-lg font-semibold mb-4 text-center">Generated Audio</h4>
+                    <div className="relative">
+                      {/* Navigation Arrows */}
+                      <button
+                        onClick={() => setCurrentVariant(prev => prev === 0 ? generationData.audioFiles.length - 1 : prev - 1)}
+                        className="absolute left-8 top-1/2 transform -translate-y-1/2 z-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-3 hover:bg-white/20 transition-all duration-200"
+                        disabled={generationData.audioFiles.length <= 1}
+                      >
+                        <ChevronLeft className="w-6 h-6 text-white" />
+                      </button>
+                      
+                      <button
+                        onClick={() => setCurrentVariant(prev => prev === generationData.audioFiles.length - 1 ? 0 : prev + 1)}
+                        className="absolute right-8 top-1/2 transform -translate-y-1/2 z-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-3 hover:bg-white/20 transition-all duration-200"
+                        disabled={generationData.audioFiles.length <= 1}
+                      >
+                        <ChevronRight className="w-6 h-6 text-white" />
+                      </button>
+
+                      {/* Current Audio Player */}
+                      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mx-12">
+                        <h5 className="text-white text-base font-medium mb-3 text-center">
+                          Song Variant {currentVariant + 1} of {generationData.audioFiles.length}
+                        </h5>
+                        <audio 
+                          controls 
+                          className="w-full"
+                          controlsList="nodownload"
+                          key={currentVariant} // Force re-render when variant changes
+                        >
+                          <source src={`http://localhost:3001/audio/${generationData.audioFiles[currentVariant]}`} type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </div>
+
+                      {/* Dots Indicator */}
+                      {generationData.audioFiles.length > 1 && (
+                        <div className="flex justify-center mt-4 gap-2">
+                          {generationData.audioFiles.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentVariant(index)}
+                              className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                                index === currentVariant 
+                                  ? 'bg-white' 
+                                  : 'bg-white/30 hover:bg-white/50'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Generated Lyrics */}
+                {generationData?.lyrics && (
+                  <div>
+                    <h4 className="text-white text-lg font-semibold mb-4 text-center">Generated Lyrics</h4>
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 max-h-60 overflow-y-auto">
+                      <pre className="text-white/90 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+                        {generationData.lyrics}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* TTS Lyrics if available */}
+                {generationData?.ttsLyrics && (
+                  <div>
+                    <h4 className="text-white text-lg font-semibold mb-4 text-center">TTS Lyrics</h4>
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 max-h-40 overflow-y-auto">
+                      <pre className="text-white/90 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+                        {generationData.ttsLyrics}
+                      </pre>
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-6 mt-12">
+          <div className="flex items-center justify-center gap-6 mt-2">
             {isGenerating ? (
               <Button variant="secondary" className="rounded-full px-8 py-4 text-base" onClick={() => {
                 setIsGenerating(false);
