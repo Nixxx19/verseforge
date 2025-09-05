@@ -55,7 +55,7 @@ const HeroSection = () => {
   // Handle balance value change
   const handleBalanceChange = (increment: boolean) => {
     if (increment) {
-      setBalanceValue(prev => Math.min(2, prev + 0.1));
+      setBalanceValue(prev => Math.min(1, prev + 0.1));
     } else {
       setBalanceValue(prev => Math.max(0, prev - 0.1));
     }
@@ -64,9 +64,9 @@ const HeroSection = () => {
   // Handle BPM value change
   const handleBpmChange = (increment: boolean) => {
     if (increment) {
-      setBpmValue(prev => Math.min(300, prev + 10));
+      setBpmValue(prev => Math.min(300, prev + 1));
     } else {
-      setBpmValue(prev => Math.max(120, prev - 10));
+      setBpmValue(prev => Math.max(120, prev - 1));
     }
   };
 

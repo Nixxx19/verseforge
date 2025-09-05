@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Swords, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Swords, Plus, ChevronLeft, ChevronRight, Play, Pause, SkipBack, SkipForward, Heart, Share2, Download, Volume2 } from "lucide-react";
 import { useUser } from '@clerk/clerk-react';
 import UserProfileDropdown from "./UserProfileDropdown";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import MySongsSection from "./MySongsSection";
 import StatisticsSection from "./StatisticsSection";
@@ -24,6 +24,75 @@ const GeneratePage = () => {
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [backendInfo, setBackendInfo] = useState('');
   const [currentVariant, setCurrentVariant] = useState(0);
+  
+  // Audio player state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [lyrics, setLyrics] = useState<any[]>([]);
+  const [showLyrics, setShowLyrics] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Audio control functions
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        // Auto-hide lyrics when pausing
+        setShowLyrics(false);
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      if (isMuted) {
+        audioRef.current.volume = volume;
+        setIsMuted(false);
+      } else {
+        audioRef.current.volume = 0;
+        setIsMuted(true);
+      }
+    }
+  };
+
+  const handleVolumeChange = (newVolume: number) => {
+    if (audioRef.current) {
+      const clampedVolume = Math.max(0, Math.min(1, newVolume));
+      setVolume(clampedVolume);
+      if (!isMuted) {
+        audioRef.current.volume = clampedVolume;
+      }
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
   
   // Update user profile visibility when authentication state changes
   useEffect(() => {
@@ -119,6 +188,16 @@ const GeneratePage = () => {
     }
   }, []);
 
+  // Reset audio state when variant changes
+  useEffect(() => {
+    if (audioRef.current) {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      audioRef.current.currentTime = 0;
+      audioRef.current.load();
+    }
+  }, [currentVariant]);
+
   // If no generation data and not generating, show loading state
   if (!generationData && !isGenerating) {
     return (
@@ -145,6 +224,18 @@ const GeneratePage = () => {
     <section className="min-h-screen bg-gradient-hero relative overflow-hidden pt-14">
       {/* Background decorative elements */}
       <div className="absolute inset-0 bg-black/20" />
+      
+      {/* Hidden audio element */}
+      {generationData?.audioFiles && generationData.audioFiles.length > 0 && (
+        <audio
+          ref={audioRef}
+          src={`http://localhost:3001/audio/${generationData.audioFiles[currentVariant]}`}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleEnded}
+          preload="metadata"
+        />
+      )}
       
       {/* Header with navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-white/10">
@@ -256,8 +347,8 @@ const GeneratePage = () => {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-14 pb-20">
-        <div className="text-center max-w-4xl">
+      <div className="container mx-auto px-1 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-14 pb-20">
+        <div className="text-center mx-auto" style={{ width: '80vw', maxWidth: '80vw !important' }}>
           {isGenerating ? (
             <>
               <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-8 text-sm font-medium">
@@ -303,7 +394,7 @@ const GeneratePage = () => {
             </>
           ) : (
             <>
-              <Badge className="bg-green-500 text-white border-0 px-6 py-2 mb-8 text-sm font-medium">
+              <Badge className="bg-gradient-to-r from-slate-600 to-slate-800 text-white border-0 px-6 py-2 mb-8 text-sm font-medium shadow-lg">
                 Generation Complete
               </Badge>
               
@@ -319,52 +410,233 @@ const GeneratePage = () => {
                 Your AI-generated song has been created successfully!
               </p>
 
-              {/* Song Output Section */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 max-w-4xl mx-auto mb-12">
-                <div className="text-center mb-8">
-                  <h3 className="text-white text-xl font-semibold mb-4">Song Generated Successfully</h3>
-                  <p className="text-white/70 text-base mb-6">
-                    Your song has been created and saved. You can find it in your VerseVault.
-                  </p>
-                </div>
-
-                {/* Audio Players Slider */}
-                {generationData?.audioFiles && generationData.audioFiles.length > 0 && (
-                  <div className="mb-8">
-                    <h4 className="text-white text-lg font-semibold mb-4 text-center">Generated Audio</h4>
-                    <div className="relative">
-                      {/* Navigation Arrows */}
+              {/* Audio Players Slider */}
+              {generationData?.audioFiles && generationData.audioFiles.length > 0 && (
+                <div className="mb-8">
+                  
+                  
+                  <div className="max-w-5xl mx-auto relative">
+                      {/* Left Arrow */}
                       <button
                         onClick={() => setCurrentVariant(prev => prev === 0 ? generationData.audioFiles.length - 1 : prev - 1)}
-                        className="absolute left-8 top-1/2 transform -translate-y-1/2 z-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-3 hover:bg-white/20 transition-all duration-200"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-14 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
                         disabled={generationData.audioFiles.length <= 1}
                       >
-                        <ChevronLeft className="w-6 h-6 text-white" />
+                        <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
                       </button>
                       
+                      {/* Right Arrow */}
                       <button
                         onClick={() => setCurrentVariant(prev => prev === generationData.audioFiles.length - 1 ? 0 : prev + 1)}
-                        className="absolute right-8 top-1/2 transform -translate-y-1/2 z-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-3 hover:bg-white/20 transition-all duration-200"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-14 w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-20 group"
                         disabled={generationData.audioFiles.length <= 1}
                       >
-                        <ChevronRight className="w-6 h-6 text-white" />
+                        <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </button>
 
-                      {/* Current Audio Player */}
-                      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mx-12">
-                        <h5 className="text-white text-base font-medium mb-3 text-center">
-                          Song Variant {currentVariant + 1} of {generationData.audioFiles.length}
-                        </h5>
-                        <audio 
-                          controls 
-                          className="w-full"
-                          controlsList="nodownload"
-                          key={currentVariant} // Force re-render when variant changes
-                        >
-                          <source src={`http://localhost:3001/audio/${generationData.audioFiles[currentVariant]}`} type="audio/mpeg" />
-                          Your browser does not support the audio element.
-                        </audio>
-                      </div>
+                      {/* Main Player - Apple Music Style */}
+                      <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500 relative">
+                         {/* Warning when Show Lyrics is pressed but song is not playing */}
+             {showLyrics && !isPlaying && (
+               <div className="absolute -top-8 right-1.5 text-white/80 text-xs font-medium bg-black/20 px-2 py-1 rounded-md">
+                 Play the track first*
+               </div>
+             )}
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Album Art */}
+              <div className="relative flex-shrink-0">
+                <div className="w-72 h-[315px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
+                  {generationData?.coverImages && generationData.coverImages.length > 0 ? (
+                    <img 
+                      src={`/generatecover/${generationData.coverImages[currentVariant]}`} 
+                      alt={`Song Variant ${currentVariant + 1}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <img 
+                      src={`/generatecover/${currentVariant === 0 ? 'cropped-Screenshot 2025-09-04 at 9.13.34 PM.png' : 'Street Rain Aesthetic.jpg'}`} 
+                      alt={`Song Variant ${currentVariant + 1}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                  )}
+                </div>
+                <Badge className="absolute -top-2 -right-2 bg-gradient-premium text-white border-0 px-3 py-1 rounded-full shadow-premium text-xs">
+                  AI Generated
+                </Badge>
+              </div>
+
+              {/* Track Info & Controls */}
+              <div className="flex-1 space-y-6">
+                <div className="relative">
+                  <h3 className="text-3xl font-bold text-white mb-2 text-left">
+                    Song Variant {currentVariant + 1}
+                  </h3>
+                  <p className="text-white/80 text-sm mb-8 text-left">
+                    Generated from: {prompt}
+                  </p>
+                  
+                  {/* Show Lyrics Toggle */}
+                  <button 
+                    onClick={() => setShowLyrics(!showLyrics)}
+                    className="absolute top-0 right-0 text-sm bg-white/10 px-3 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/20 transition-all duration-200"
+                  >
+                    {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
+                  </button>
+                </div>
+
+                {/* Lyrics Display / Waveform */}
+                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-2 h-20 -mt-6">
+                  {showLyrics && isPlaying && lyrics.length > 0 ? (
+                    // Show lyrics only when Show Lyrics button is pressed AND playing
+                    <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
+                      {(() => {
+                        const currentLineIndex = lyrics.findIndex((line, index) => {
+                          const nextLine = lyrics[index + 1];
+                          return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
+                        });
+                        
+                        const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
+                        const prevLine = currentLineIndex > 0 ? lyrics[currentLineIndex - 1] : null;
+                        
+                        return currentLine ? (
+                          <p 
+                            key={currentLineIndex}
+                            className="lyric-roller absolute text-foreground/90 text-3xl font-bold text-center leading-tight"
+                            style={{
+                              animation: 'rollerFlow 3s ease-out forwards'
+                            }}
+                          >
+                            {currentLine.text}
+                          </p>
+                        ) : null;
+                      })()}
+                    </div>
+                  ) : (
+                    // Show waveform when Hide Lyrics is pressed OR not playing
+                    <div className="flex items-end justify-center gap-[4.3px] h-full">
+                      {Array.from({ length: 75 }, (_, index) => {
+                        const height = Math.random() * 100;
+                        return (
+                          <div
+                            key={index}
+                            className="bg-gradient-create rounded-full transition-all duration-300"
+                            style={{
+                              height: `${height * 0.96}%`,
+                              width: '4.5px',
+                              opacity: 0.65
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div 
+                    className="w-full bg-white/10 rounded-full h-2 overflow-hidden cursor-pointer relative"
+                    onClick={(e) => {
+                      if (audioRef.current && duration > 0) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const clickPercent = clickX / rect.width;
+                        const newTime = clickPercent * duration;
+                        audioRef.current.currentTime = newTime;
+                        setCurrentTime(newTime);
+                      }
+                    }}
+                  >
+                    <div 
+                      className="h-full bg-gradient-create rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
+                </div>
+
+                {/* Premium Controls */}
+                <div className="flex items-center justify-between -mt-8">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (audioRef.current) {
+                          audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15);
+                        }
+                      }}
+                      className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+                    >
+                      <SkipBack className="w-5 h-5" />
+                    </Button>
+                    
+                    <Button
+                      variant="create"
+                      size="icon"
+                      onClick={togglePlay}
+                      className="w-12 h-12 rounded-full shadow-glow hover:scale-110 transition-all duration-300 backdrop-blur-sm"
+                    >
+                      {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (audioRef.current) {
+                          audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 15);
+                        }
+                      }}
+                      className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+                    >
+                      <SkipForward className="w-5 h-5" />
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" className="gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full px-3 py-2">
+                      <Heart className="w-4 h-4" />
+                      0
+                    </Button>
+                    <Button variant="ghost" size="sm" className="bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full p-2">
+                      <Share2 className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full p-2">
+                      <Download className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                                              className={`backdrop-blur-sm rounded-full p-2 transition-all duration-300 ${
+                          isMuted 
+                            ? "bg-red-600/60 hover:bg-red-700/70 text-white" 
+                            : "bg-white/5 hover:bg-white/10"
+                        }`}
+                      onClick={toggleMute}
+                      title={isMuted ? "Unmute" : "Mute"}
+                    >
+                      {isMuted ? (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                        </svg>
+                      ) : (
+                        <Volume2 className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
                       {/* Dots Indicator */}
                       {generationData.audioFiles.length > 1 && (
@@ -409,7 +681,6 @@ const GeneratePage = () => {
                     </div>
                   </div>
                 )}
-              </div>
             </>
           )}
 
