@@ -453,7 +453,7 @@ const GeneratePage = () => {
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-72 h-[315px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
+                <div className="w-72 h-[308px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
                   {generationData?.coverImages && generationData.coverImages.length > 0 ? (
                     <img 
                       src={`/generatecover/${generationData.coverImages[currentVariant]}`} 
@@ -526,7 +526,7 @@ const GeneratePage = () => {
                 </div>
 
                 {/* Lyrics Display / Waveform */}
-                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-0 h-20 -mt-6">
+                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-2 h-20 -mt-6">
                   {showLyrics && isPlaying && lyrics.length > 0 ? (
                     // Show lyrics only when Show Lyrics button is pressed AND playing
                     <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
