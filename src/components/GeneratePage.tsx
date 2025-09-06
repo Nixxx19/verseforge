@@ -33,6 +33,8 @@ const GeneratePage = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [lyrics, setLyrics] = useState<any[]>([]);
   const [showLyrics, setShowLyrics] = useState(false);
+  const [songName, setSongName] = useState('Song Variant 1');
+  const [isEditingName, setIsEditingName] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Audio control functions
@@ -196,6 +198,8 @@ const GeneratePage = () => {
       audioRef.current.currentTime = 0;
       audioRef.current.load();
     }
+    // Update song name when variant changes
+    setSongName(`Song Variant ${currentVariant + 1}`);
   }, [currentVariant]);
 
   // If no generation data and not generating, show loading state
@@ -440,10 +444,16 @@ const GeneratePage = () => {
 
                       {/* Main Player - Apple Music Style */}
                       <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500 relative">
+                         {/* Warning when Show Lyrics is pressed but song is not playing */}
+             {showLyrics && !isPlaying && (
+               <div className="absolute -top-8 right-1.5 text-white/80 text-xs font-medium bg-black/20 px-2 py-1 rounded-md">
+                 Play the track first*
+               </div>
+             )}
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-72 h-[308px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
+                <div className="w-72 h-[315px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
                   {generationData?.coverImages && generationData.coverImages.length > 0 ? (
                     <img 
                       src={`/generatecover/${generationData.coverImages[currentVariant]}`} 
@@ -466,33 +476,101 @@ const GeneratePage = () => {
               {/* Track Info & Controls */}
               <div className="flex-1 space-y-6">
                 <div className="relative">
-                  <h3 className="text-3xl font-bold text-white mb-2 text-left">
-                    Song Variant {currentVariant + 1}
-                  </h3>
+                  <div className="flex items-baseline gap-3 mb-2">
+                    {isEditingName ? (
+                      <input
+                        type="text"
+                        value={songName}
+                        onChange={(e) => setSongName(e.target.value)}
+                        onBlur={() => setIsEditingName(false)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setIsEditingName(false);
+                          }
+                        }}
+                        className="text-3xl font-bold text-white bg-transparent border-none outline-none focus:outline-none"
+                        autoFocus
+                      />
+                    ) : (
+                      <h3 
+                        className="text-3xl font-bold text-white cursor-pointer hover:text-white/80 transition-colors"
+                        onClick={() => setIsEditingName(true)}
+                        title="Click to edit song name"
+                      >
+                        {songName}
+                      </h3>
+                    )}
+                    <button
+                      onClick={() => setIsEditingName(!isEditingName)}
+                      className="text-white/60 hover:text-white/80 transition-colors"
+                      title={isEditingName ? "Save" : "Edit song name"}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <path d="M13 21h8"/>
+                        <path d="m15 5 4 4"/>
+                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                      </svg>
+                    </button>
+                  </div>
                   <p className="text-white/80 text-sm mb-8 text-left">
                     Generated from: {prompt}
                   </p>
                   
+                  {/* Show Lyrics Toggle */}
+                  <button 
+                    onClick={() => setShowLyrics(!showLyrics)}
+                    className="absolute top-0 right-0 text-sm bg-white/10 px-3 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/20 transition-all duration-200"
+                  >
+                    {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
+                  </button>
                 </div>
 
-                {/* Waveform Display */}
-                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-2 h-20 -mt-6">
-                  <div className="flex items-end justify-center gap-[4.3px] h-full">
-                    {Array.from({ length: 75 }, (_, index) => {
-                      const height = Math.random() * 100;
-                      return (
-                        <div
-                          key={index}
-                          className="bg-gradient-create rounded-full transition-all duration-300"
-                          style={{
-                            height: `${height * 0.96}%`,
-                            width: '4.5px',
-                            opacity: 0.65
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
+                {/* Lyrics Display / Waveform */}
+                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-0 h-20 -mt-6">
+                  {showLyrics && isPlaying && lyrics.length > 0 ? (
+                    // Show lyrics only when Show Lyrics button is pressed AND playing
+                    <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
+                      {(() => {
+                        const currentLineIndex = lyrics.findIndex((line, index) => {
+                          const nextLine = lyrics[index + 1];
+                          return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
+                        });
+                        
+                        const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
+                        const prevLine = currentLineIndex > 0 ? lyrics[currentLineIndex - 1] : null;
+                        
+                        return currentLine ? (
+                          <p 
+                            key={currentLineIndex}
+                            className="lyric-roller absolute text-foreground/90 text-3xl font-bold text-center leading-tight"
+                            style={{
+                              animation: 'rollerFlow 3s ease-out forwards'
+                            }}
+                          >
+                            {currentLine.text}
+                          </p>
+                        ) : null;
+                      })()}
+                    </div>
+                  ) : (
+                    // Show waveform when Hide Lyrics is pressed OR not playing
+                    <div className="flex items-end justify-center gap-[4.3px] h-full">
+                      {Array.from({ length: 75 }, (_, index) => {
+                        const height = Math.random() * 100;
+                        return (
+                          <div
+                            key={index}
+                            className="bg-gradient-create rounded-full transition-all duration-300"
+                            style={{
+                              height: `${height * 0.96}%`,
+                              width: '4.5px',
+                              opacity: 0.65
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Progress Bar */}
