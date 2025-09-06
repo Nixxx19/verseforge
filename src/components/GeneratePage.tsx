@@ -348,7 +348,7 @@ const GeneratePage = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-1 relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] pt-14 pb-20">
-        <div className="text-center mx-auto" style={{ width: '80vw', maxWidth: '80vw !important' }}>
+        <div className="text-center mx-auto">
           {isGenerating ? (
             <>
               <Badge className="bg-gradient-create text-white border-0 px-6 py-2 mb-8 text-sm font-medium">
@@ -440,16 +440,10 @@ const GeneratePage = () => {
 
                       {/* Main Player - Apple Music Style */}
                       <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500 relative">
-                         {/* Warning when Show Lyrics is pressed but song is not playing */}
-             {showLyrics && !isPlaying && (
-               <div className="absolute -top-8 right-1.5 text-white/80 text-xs font-medium bg-black/20 px-2 py-1 rounded-md">
-                 Play the track first*
-               </div>
-             )}
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-72 h-[315px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
+                <div className="w-72 h-[308px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
                   {generationData?.coverImages && generationData.coverImages.length > 0 ? (
                     <img 
                       src={`/generatecover/${generationData.coverImages[currentVariant]}`} 
@@ -458,7 +452,7 @@ const GeneratePage = () => {
                     />
                   ) : (
                     <img 
-                      src={`/generatecover/${currentVariant === 0 ? 'cropped-Screenshot 2025-09-04 at 9.13.34 PM.png' : 'Street Rain Aesthetic.jpg'}`} 
+                      src={`/generatecover/${currentVariant === 0 ? 'default-cover.png' : 'Street Rain Aesthetic.jpg'}`} 
                       alt={`Song Variant ${currentVariant + 1}`} 
                       className="w-full h-full object-cover" 
                     />
@@ -479,61 +473,26 @@ const GeneratePage = () => {
                     Generated from: {prompt}
                   </p>
                   
-                  {/* Show Lyrics Toggle */}
-                  <button 
-                    onClick={() => setShowLyrics(!showLyrics)}
-                    className="absolute top-0 right-0 text-sm bg-white/10 px-3 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/20 transition-all duration-200"
-                  >
-                    {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
-                  </button>
                 </div>
 
-                {/* Lyrics Display / Waveform */}
+                {/* Waveform Display */}
                 <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-2 h-20 -mt-6">
-                  {showLyrics && isPlaying && lyrics.length > 0 ? (
-                    // Show lyrics only when Show Lyrics button is pressed AND playing
-                    <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
-                      {(() => {
-                        const currentLineIndex = lyrics.findIndex((line, index) => {
-                          const nextLine = lyrics[index + 1];
-                          return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
-                        });
-                        
-                        const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
-                        const prevLine = currentLineIndex > 0 ? lyrics[currentLineIndex - 1] : null;
-                        
-                        return currentLine ? (
-                          <p 
-                            key={currentLineIndex}
-                            className="lyric-roller absolute text-foreground/90 text-3xl font-bold text-center leading-tight"
-                            style={{
-                              animation: 'rollerFlow 3s ease-out forwards'
-                            }}
-                          >
-                            {currentLine.text}
-                          </p>
-                        ) : null;
-                      })()}
-                    </div>
-                  ) : (
-                    // Show waveform when Hide Lyrics is pressed OR not playing
-                    <div className="flex items-end justify-center gap-[4.3px] h-full">
-                      {Array.from({ length: 75 }, (_, index) => {
-                        const height = Math.random() * 100;
-                        return (
-                          <div
-                            key={index}
-                            className="bg-gradient-create rounded-full transition-all duration-300"
-                            style={{
-                              height: `${height * 0.96}%`,
-                              width: '4.5px',
-                              opacity: 0.65
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
+                  <div className="flex items-end justify-center gap-[4.3px] h-full">
+                    {Array.from({ length: 75 }, (_, index) => {
+                      const height = Math.random() * 100;
+                      return (
+                        <div
+                          key={index}
+                          className="bg-gradient-create rounded-full transition-all duration-300"
+                          style={{
+                            height: `${height * 0.96}%`,
+                            width: '4.5px',
+                            opacity: 0.65
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Progress Bar */}
