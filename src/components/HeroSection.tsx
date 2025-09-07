@@ -570,7 +570,24 @@ const HeroSection = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-          <Button variant="secondary" className="rounded-full px-8 py-4 text-lg font-medium">
+          <Button 
+            variant="secondary" 
+            className="rounded-full px-8 py-4 text-lg font-medium"
+            onClick={() => {
+              const element = document.getElementById('showcase');
+              if (element) {
+                const headerHeight = 80; // Height of the fixed header (h-20 = 80px)
+                const extraOffset = -70; // Much more negative offset for showcase
+                
+                const elementPosition = element.offsetTop - headerHeight - extraOffset;
+                
+                window.scrollTo({
+                  top: elementPosition,
+                  behavior: 'smooth'
+                });
+              }
+            }}
+          >
             🎧 Show Me Examples
           </Button>
         </div>

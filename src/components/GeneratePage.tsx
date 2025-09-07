@@ -19,7 +19,7 @@ const GeneratePage = () => {
   const [temperature, setTemperature] = useState(location.state?.temperature || 1.7);
   const [balance, setBalance] = useState(location.state?.balance || 0.7);
   const [bpm, setBpm] = useState(location.state?.bpm || 120);
-  const [isGenerating, setIsGenerating] = useState(location.state?.isGenerating !== false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [generationStatus, setGenerationStatus] = useState('Initializing...');
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [backendInfo, setBackendInfo] = useState('');
@@ -35,6 +35,8 @@ const GeneratePage = () => {
   const [showLyrics, setShowLyrics] = useState(false);
   const [songName, setSongName] = useState('Song Variant 1');
   const [isEditingName, setIsEditingName] = useState(false);
+  const [customCoverImages, setCustomCoverImages] = useState<{[key: number]: string}>({});
+  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Audio control functions
@@ -95,6 +97,33 @@ const GeneratePage = () => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  // Handle album cover upload
+  const handleCoverUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCustomCoverImages(prev => ({
+          ...prev,
+          [currentVariant]: e.target?.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
   // Update user profile visibility when authentication state changes
   useEffect(() => {
@@ -106,10 +135,14 @@ const GeneratePage = () => {
 
   // Start generation when component mounts with generation state
   useEffect(() => {
-    if (isGenerating && prompt) {
+    // Only start generating if we have a prompt and are coming from navigation with isGenerating: true
+    // AND we don't already have generation data (to prevent regeneration on refresh)
+    // AND we've already checked sessionStorage
+    if (location.state?.isGenerating && prompt && !generationData && hasLoadedFromStorage) {
+      setIsGenerating(true);
       startGeneration();
     }
-  }, [isGenerating, prompt]);
+  }, [prompt, generationData, hasLoadedFromStorage]);
 
   // Function to start backend generation
   const startGeneration = async () => {
@@ -185,9 +218,10 @@ const GeneratePage = () => {
       const result = JSON.parse(storedResult);
       setGenerationData(result.generationData);
       setPrompt(result.prompt);
-      setIsGenerating(false);
+      setIsGenerating(false); // Ensure we're not in generating state
       sessionStorage.removeItem('generationResult'); // Clear after reading
     }
+    setHasLoadedFromStorage(true); // Mark that we've checked storage
   }, []);
 
   // Reset audio state when variant changes
@@ -359,7 +393,7 @@ const GeneratePage = () => {
                 Generation in Progress
               </Badge>
               
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-8">
+              <h1 className="font-sans text-5xl md:text-7xl font-bold text-white mb-8">
                 Creating Your
                 <br />
                 <span className="bg-gradient-warm bg-clip-text text-transparent">
@@ -442,19 +476,25 @@ const GeneratePage = () => {
                         </svg>
                       </button>
 
-                      {/* Main Player - Apple Music Style */}
-                      <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500 relative">
-                         {/* Warning when Show Lyrics is pressed but song is not playing */}
-             {showLyrics && !isPlaying && (
-               <div className="absolute -top-8 right-1.5 text-white/80 text-xs font-medium bg-black/20 px-2 py-1 rounded-md">
-                 Play the track first*
-               </div>
-             )}
-            <div className="flex flex-col lg:flex-row gap-6">
+                        {/* Main Player - Apple Music Style */}
+                        <div className="bg-glass-card backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-glass hover:shadow-glass-hover transition-all duration-500 relative">
+                          {/* Warning when Show Lyrics is pressed but song is not playing */}
+                          {showLyrics && !isPlaying && (
+                            <div className="absolute -top-8 right-1.5 text-white/80 text-xs font-medium bg-black/20 px-2 py-1 rounded-md">
+                              Play the track first*
+                            </div>
+                          )}
+              <div className="flex flex-col lg:flex-row gap-6">
               {/* Album Art */}
               <div className="relative flex-shrink-0">
-                <div className="w-72 h-[308px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60">
-                  {generationData?.coverImages && generationData.coverImages.length > 0 ? (
+                <div className="w-72 h-[308px] bg-gradient-hero rounded-3xl flex items-center justify-center mx-auto lg:mx-0 overflow-hidden border-2 border-primary/60 relative group">
+                  {customCoverImages[currentVariant] ? (
+                    <img 
+                      src={customCoverImages[currentVariant]} 
+                      alt={`Custom Cover for ${songName}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : generationData?.coverImages && generationData.coverImages.length > 0 ? (
                     <img 
                       src={`/generatecover/${generationData.coverImages[currentVariant]}`} 
                       alt={`Song Variant ${currentVariant + 1}`} 
@@ -467,6 +507,28 @@ const GeneratePage = () => {
                       className="w-full h-full object-cover" 
                     />
                   )}
+                  
+                  {/* Upload Overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div className="text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverUpload}
+                        className="hidden"
+                        id="cover-upload"
+                      />
+                      <label
+                        htmlFor="cover-upload"
+                        className="cursor-pointer bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Upload Cover
+                      </label>
+                    </div>
+                  </div>
                 </div>
                 <Badge className="absolute -top-2 -right-2 bg-gradient-premium text-white border-0 px-3 py-1 rounded-full shadow-premium text-xs">
                   AI Generated
@@ -474,104 +536,108 @@ const GeneratePage = () => {
               </div>
 
               {/* Track Info & Controls */}
-              <div className="flex-1 space-y-6">
-                <div className="relative">
-                  <div className="flex items-baseline gap-3 mb-2">
-                    {isEditingName ? (
-                      <input
-                        type="text"
-                        value={songName}
-                        onChange={(e) => setSongName(e.target.value)}
-                        onBlur={() => setIsEditingName(false)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            setIsEditingName(false);
-                          }
-                        }}
-                        className="text-3xl font-bold text-white bg-transparent border-none outline-none focus:outline-none"
-                        autoFocus
-                      />
-                    ) : (
-                      <h3 
-                        className="text-3xl font-bold text-white cursor-pointer hover:text-white/80 transition-colors"
-                        onClick={() => setIsEditingName(true)}
-                        title="Click to edit song name"
-                      >
-                        {songName}
-                      </h3>
-                    )}
-                    <button
-                      onClick={() => setIsEditingName(!isEditingName)}
-                      className="text-white/60 hover:text-white/80 transition-colors"
-                      title={isEditingName ? "Save" : "Edit song name"}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M13 21h8"/>
-                        <path d="m15 5 4 4"/>
-                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-                      </svg>
-                    </button>
-                  </div>
-                  <p className="text-white/80 text-sm mb-8 text-left">
-                    Generated from: {prompt}
-                  </p>
+                 <div className="flex-1 space-y-6">
+                  <div className="relative">
+                   <div className="flex items-baseline gap-3 mb-2">
+                     {isEditingName ? (
+                       <input
+                         type="text"
+                         value={songName}
+                         onChange={(e) => setSongName(e.target.value)}
+                         onBlur={() => setIsEditingName(false)}
+                         onKeyDown={(e) => {
+                           if (e.key === 'Enter') {
+                             setIsEditingName(false);
+                           }
+                         }}
+                         className="text-3xl font-bold text-white bg-transparent border-none outline-none focus:outline-none"
+                         autoFocus
+                       />
+                     ) : (
+                       <h3 
+                         className="text-3xl font-bold text-white cursor-pointer hover:text-white/80 transition-colors"
+                         onClick={() => setIsEditingName(true)}
+                         title="Click to edit song name"
+                       >
+                         {songName}
+                       </h3>
+                     )}
+                     <button
+                       onClick={() => setIsEditingName(!isEditingName)}
+                       className="text-white/60 hover:text-white/80 transition-colors"
+                       title={isEditingName ? "Save" : "Edit song name"}
+                     >
+                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                         <path d="M13 21h8"/>
+                         <path d="m15 5 4 4"/>
+                         <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                       </svg>
+                     </button>
+                   </div>
+                   <p className="text-white/80 text-sm mb-8 text-left">
+                     Generated from: {prompt}
+                   </p>
+                   
+                   {/* Show Lyrics Toggle */}
+                   <button 
+                     onClick={(e) => {
+                       e.preventDefault();
+                       setShowLyrics(!showLyrics);
+                     }}
+                     className="absolute top-0 right-0 text-sm bg-white/10 px-3 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/20 transition-all duration-200"
+                   >
+                     {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
+                   </button>
                   
-                  {/* Show Lyrics Toggle */}
-                  <button 
-                    onClick={() => setShowLyrics(!showLyrics)}
-                    className="absolute top-0 right-0 text-sm bg-white/10 px-3 py-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/20 transition-all duration-200"
-                  >
-                    {showLyrics ? 'Hide Lyrics' : 'Show Lyrics'}
-                  </button>
                 </div>
 
-                {/* Lyrics Display / Waveform */}
-                <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-2 h-20 -mt-6">
-                  {showLyrics && isPlaying && lyrics.length > 0 ? (
-                    // Show lyrics only when Show Lyrics button is pressed AND playing
-                    <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
-                      {(() => {
-                        const currentLineIndex = lyrics.findIndex((line, index) => {
-                          const nextLine = lyrics[index + 1];
-                          return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
-                        });
-                        
-                        const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
-                        const prevLine = currentLineIndex > 0 ? lyrics[currentLineIndex - 1] : null;
-                        
-                        return currentLine ? (
-                          <p 
-                            key={currentLineIndex}
-                            className="lyric-roller absolute text-foreground/90 text-3xl font-bold text-center leading-tight"
-                            style={{
-                              animation: 'rollerFlow 3s ease-out forwards'
-                            }}
-                          >
-                            {currentLine.text}
-                          </p>
-                        ) : null;
-                      })()}
-                    </div>
-                  ) : (
-                    // Show waveform when Hide Lyrics is pressed OR not playing
-                    <div className="flex items-end justify-center gap-[4.3px] h-full">
-                      {Array.from({ length: 75 }, (_, index) => {
-                        const height = Math.random() * 100;
-                        return (
-                          <div
-                            key={index}
-                            className="bg-gradient-create rounded-full transition-all duration-300"
-                            style={{
-                              height: `${height * 0.96}%`,
-                              width: '4.5px',
-                              opacity: 0.65
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                 {/* Lyrics Display / Waveform */}
+                 <div className="bg-glass-card/100 rounded-2xl pt-6 pb-0 px-2 h-20 -mt-6">
+                   {showLyrics && isPlaying && lyrics.length > 0 ? (
+                     // Show lyrics only when Show Lyrics button is pressed AND playing
+                     <div className="text-center flex items-center justify-center h-full min-h-full relative overflow-hidden">
+                       {(() => {
+                         const currentLineIndex = lyrics.findIndex((line, index) => {
+                           const nextLine = lyrics[index + 1];
+                           return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
+                         });
+                         
+                         const currentLine = currentLineIndex >= 0 ? lyrics[currentLineIndex] : null;
+                         const prevLine = currentLineIndex > 0 ? lyrics[currentLineIndex - 1] : null;
+                         
+                         return currentLine ? (
+                           <p 
+                             key={currentLineIndex}
+                             className="lyric-roller absolute text-foreground/90 text-3xl font-bold text-center leading-tight"
+                             style={{
+                               animation: 'rollerFlow 3s ease-out forwards'
+                             }}
+                           >
+                             {currentLine.text}
+                           </p>
+                         ) : null;
+                       })()}
+                     </div>
+                   ) : (
+                     // Show waveform when Hide Lyrics is pressed OR not playing
+                     <div className="flex items-end justify-center gap-[4.3px] h-full">
+                       {Array.from({ length: 75 }, (_, index) => {
+                         const height = Math.random() * 100;
+                         return (
+                           <div
+                             key={index}
+                             className="bg-gradient-create rounded-full transition-all duration-300"
+                             style={{
+                               height: `${height * 0.96}%`,
+                               width: '4.5px',
+                               opacity: 0.65
+                             }}
+                           />
+                         );
+                       })}
+                     </div>
+                   )}
+                 </div>
 
                 {/* Progress Bar */}
                 <div className="space-y-2">
@@ -696,8 +762,8 @@ const GeneratePage = () => {
                 )}
 
                 {/* Generated Lyrics */}
-                {generationData?.lyrics && (
-                  <div>
+                {generationData?.lyrics && showLyrics && (
+                  <div className="animate-in slide-in-from-bottom-4 duration-300">
                     <h4 className="text-white text-lg font-semibold mb-4 text-center">Generated Lyrics</h4>
                     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 max-h-60 overflow-y-auto">
                       <pre className="text-white/90 text-sm whitespace-pre-wrap font-mono leading-relaxed">
