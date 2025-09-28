@@ -97,7 +97,7 @@ The generated lyrics are then processed by Sunauto TTS, which we've enhanced wit
 - **Quality Enhancement**: Improved vocal synthesis and musical expression
 - **Output**: Professional-quality audio tracks with natural-sounding vocals
 
-### Technical Pipeline Flow
+## Technical Pipeline Flow
 
 ```
 User Input → LSTM Preprocessing → Llama 3.3 Generation → Sunauto TTS → Final Audio
@@ -105,7 +105,7 @@ User Input → LSTM Preprocessing → Llama 3.3 Generation → Sunauto TTS → F
 Eg: "Drake song"  → Cloud Words → Artist-style Lyrics → Professional Audio
 ```
 
-### Why This Approach Works
+## Why This Approach Works
 
 1. **LSTM Preprocessing**: Ensures input is optimized for music generation
 2. **Fine-Tuned Llama**: Leverages open-source power with music specialization
@@ -215,20 +215,18 @@ VerseForge features a sophisticated design system with:
 - **Utils**: Helper functions and utilities
 - **Types**: TypeScript type definitions
 
-## 🔒 Security & Authentication
+### Security & Authentication
 
 - **User Authentication**: Powered by Clerk
 - **API Security**: CORS enabled for development
 - **Input Validation**: Server-side validation for all inputs
 
-## 📱 Browser Support
+### Browser Support
 
 - **Chrome**: 90+
 - **Firefox**: 88+
 - **Safari**: 14+
 - **Edge**: 90+
-
----
 
 <div align="center">
 
