@@ -176,3 +176,13 @@ backend/
 └── .env               # Environment variables
 ```
 
+### Key Technologies
+
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
+- **Backend**: Express.js, Node.js
+- **UI Components**: Radix UI, shadcn/ui
+- **Authentication**: Clerk
+- **Styling**: Tailwind CSS with custom design system
+- **Icons**: Lucide React
+- **State Management**: React Hooks, Context API
+
