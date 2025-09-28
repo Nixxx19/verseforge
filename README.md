@@ -30,3 +30,44 @@ VerseForge is a cutting-edge AI-powered music generation platform that transform
 - 🔄 **Multiple Variants** - Generate 2 different versions of each song
 - 💾 **Session Persistence** - Your creations persist across page refreshes
 
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** (v18.0.0 or higher)
+- **npm** or **yarn**
+- **API Keys** (see Environment Variables section)
+
+### Installation & Setup
+
+#### Step 1: Clone the Repository
+```bash
+# Clone the repository
+git clone https://github.com/Nixxx19/verseforge.git
+cd verseforge
+```
+
+#### Step 2: Install Dependencies
+```bash
+# Install frontend dependencies
+npm install
+
+# Install backend dependencies
+cd backend
+npm install
+cd ..
+```
+
+#### Step 3: Start the Application
+```bash
+# Start backend server
+cd backend
+npm start
+```
+
+In a new terminal window:
+```bash
+# Start frontend server
+npm run dev
+```
+
