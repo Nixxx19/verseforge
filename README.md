@@ -143,3 +143,27 @@ This multi-stage approach allows us to generate music that's both creative and t
 - **Volume Control**: Adjust volume or mute the audio
 - **Progress Bar**: Click to seek to any point in the song
 
+## 🏗️ Project Architecture
+
+### Frontend (React + TypeScript)
+
+```
+src/
+├── components/           # React components
+│   ├── ui/              # Reusable UI components (shadcn/ui)
+│   ├── Header.tsx       # Navigation header
+│   ├── HeroSection.tsx  # Main landing section
+│   ├── GeneratePage.tsx # Song generation page
+│   ├── AudioPlayerSection.tsx # Audio showcase
+│   ├── FeaturesSection.tsx    # Features showcase
+│   └── ...
+├── pages/               # Page components
+│   ├── Index.tsx        # Homepage
+│   └── NotFound.tsx     # 404 page
+├── contexts/            # React contexts
+│   └── AuthContext.tsx  # Authentication context
+├── hooks/               # Custom React hooks
+├── lib/                 # Utility functions
+└── main.tsx            # Application entry point
+```
+
