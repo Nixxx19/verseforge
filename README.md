@@ -71,3 +71,22 @@ In a new terminal window:
 npm run dev
 ```
 
+## 🔬 How It Works
+
+VerseForge uses a sophisticated multi-stage AI pipeline to transform your creative ideas into professional-quality music. Here's the technical breakdown of our advanced system:
+
+### Stage 1: Custom LSTM Preprocessing
+Before generating lyrics, we run your input through our custom LSTM (Long Short-Term Memory) neural network that has been specifically trained on music data:
+
+- **Purpose**: Preprocesses and enhances your input to create "cloud words" and cleaned lyrics
+- **Training Data**: Trained on extensive music datasets to understand lyrical patterns and structures
+- **Output**: Refined, music-optimized input that's ready for the next stage
+
+### Stage 2: Fine-Tuned Llama 3.3 Model
+Our core lyrics generation is powered by Meta's open-source Llama 3.3 model, which we've fine-tuned specifically for music:
+
+- **Base Model**: `meta-llama/llama-3.3-8b-instruct:free`
+- **Fine-Tuning**: Custom fine-tuning on music-specific datasets
+- **Specialization**: Trained to understand artist styles, lyrical structures, and musical themes
+- **Output**: High-quality, artist-style lyrics that match your creative vision
+
