@@ -105,3 +105,12 @@ User Input → LSTM Preprocessing → Llama 3.3 Generation → Sunauto TTS → F
 Eg: "Drake song"  → Cloud Words → Artist-style Lyrics → Professional Audio
 ```
 
+### Why This Approach Works
+
+1. **LSTM Preprocessing**: Ensures input is optimized for music generation
+2. **Fine-Tuned Llama**: Leverages open-source power with music specialization
+3. **Custom TTS Tags**: 1000+ tags provide precise control over audio output
+4. **End-to-End Pipeline**: Each stage is optimized for the next, ensuring quality
+
+This multi-stage approach allows us to generate music that's both creative and technically excellent, combining the power of open-source models with our specialized fine-tuning.
+
