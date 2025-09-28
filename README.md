@@ -90,3 +90,11 @@ Our core lyrics generation is powered by Meta's open-source Llama 3.3 model, whi
 - **Specialization**: Trained to understand artist styles, lyrical structures, and musical themes
 - **Output**: High-quality, artist-style lyrics that match your creative vision
 
+### Stage 3: Advanced TTS with Custom Tags
+The generated lyrics are then processed by Sunauto TTS, which we've enhanced with custom fine-tuning:
+
+- **Custom Tags**: Created 1000+ specialized tags for better audio output
+- **Fine-Tuning**: Custom training to optimize for music generation
+- **Quality Enhancement**: Improved vocal synthesis and musical expression
+- **Output**: Professional-quality audio tracks with natural-sounding vocals
+
