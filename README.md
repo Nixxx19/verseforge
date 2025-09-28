@@ -114,3 +114,32 @@ Eg: "Drake song"  → Cloud Words → Artist-style Lyrics → Professional Audio
 
 This multi-stage approach allows us to generate music that's both creative and technically excellent, combining the power of open-source models with our specialized fine-tuning.
 
+## 🎵 How to Use
+
+### 1. Generate Your First Song
+
+1. **Navigate to the homepage** - You'll see the main interface with a prompt input
+2. **Enter your musical vision** - Describe the song you want to create:
+   - `"Drake song about late night vibes"`
+   - `"Taylor Swift ballad about heartbreak"`
+   - `"Travis Scott trap song about success"`
+3. **Adjust settings (optional)**:
+   - **Temperature** (1.5-2.0): Controls lyrical creativity and originality
+   - **Balance** (0-2.0): Controls vocal balance and instrumental focus
+   - **BPM** (120-300): Sets the tempo and energy of the track
+4. **Click "Generate"** - The system will create your song
+
+### 2. Customize Your Song
+
+- **Edit Song Name**: Click on the song title to rename it
+- **Upload Custom Cover**: Hover over album art and click "Upload Cover"
+- **Switch Variants**: Use arrow buttons to explore different versions
+- **Play Controls**: Use the full-featured audio player with lyrics display
+
+### 3. Explore Features
+
+- **Lyrics Display**: Click the lyrics button to see synchronized lyrics
+- **Waveform Visualization**: Watch the animated waveform during playback
+- **Volume Control**: Adjust volume or mute the audio
+- **Progress Bar**: Click to seek to any point in the song
+
