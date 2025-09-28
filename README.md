@@ -167,3 +167,12 @@ src/
 └── main.tsx            # Application entry point
 ```
 
+### Backend (Express.js + Node.js)
+
+```
+backend/
+├── server.js           # Main server file
+├── package.json        # Backend dependencies
+└── .env               # Environment variables
+```
+
