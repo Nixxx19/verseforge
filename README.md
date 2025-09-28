@@ -55,7 +55,6 @@ npm install
 # Install backend dependencies
 cd backend
 npm install
-cd ..
 ```
 
 #### Step 3: Start the Application
@@ -97,4 +96,12 @@ The generated lyrics are then processed by Sunauto TTS, which we've enhanced wit
 - **Fine-Tuning**: Custom training to optimize for music generation
 - **Quality Enhancement**: Improved vocal synthesis and musical expression
 - **Output**: Professional-quality audio tracks with natural-sounding vocals
+
+### Technical Pipeline Flow
+
+```
+User Input → LSTM Preprocessing → Llama 3.3 Generation → Sunauto TTS → Final Audio
+      ↓              ↓                    ↓                ↓
+Eg: "Drake song"  → Cloud Words → Artist-style Lyrics → Professional Audio
+```
 
