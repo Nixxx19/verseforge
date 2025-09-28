@@ -2,6 +2,8 @@
 
 <div align="center">
 
+![VerseForge Logo](public/swords.svg)
+
 **The world's most advanced AI music creation platform. Create professional songs, beats, and compositions with cutting-edge artificial intelligence.**
 
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
