@@ -228,3 +228,12 @@ VerseForge features a sophisticated design system with:
 - **Safari**: 14+
 - **Edge**: 90+
 
+---
+
+<div align="center">
+
+**Made with ❤️ by the VerseForge Team**
+
+*Transforming creative ideas into musical masterpieces.*
+</div>
+
