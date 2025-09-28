@@ -186,3 +186,45 @@ backend/
 - **Icons**: Lucide React
 - **State Management**: React Hooks, Context API
 
+## 🎨 Design System
+
+VerseForge features a sophisticated design system with:
+
+### Color Palette
+- **Primary**: Gradient blues and purples
+- **Accent**: Warm oranges and reds
+- **Background**: Dark theme with glass morphism
+- **Text**: High contrast white and muted tones
+
+### Typography
+- **Display**: Clash Display (headings)
+- **Body**: Inter (main text)
+- **Monospace**: For code and lyrics
+
+### Components
+- **Glass Cards**: Frosted glass effect with backdrop blur
+- **Gradient Buttons**: Animated gradient backgrounds
+- **Custom Shadows**: Multi-layered shadow system
+- **Responsive Grid**: Mobile-first responsive desig
+
+### Code Structure
+
+- **Components**: Modular, reusable React components
+- **Hooks**: Custom hooks for state management
+- **Contexts**: Global state management
+- **Utils**: Helper functions and utilities
+- **Types**: TypeScript type definitions
+
+## 🔒 Security & Authentication
+
+- **User Authentication**: Powered by Clerk
+- **API Security**: CORS enabled for development
+- **Input Validation**: Server-side validation for all inputs
+
+## 📱 Browser Support
+
+- **Chrome**: 90+
+- **Firefox**: 88+
+- **Safari**: 14+
+- **Edge**: 90+
+
