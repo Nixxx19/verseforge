@@ -144,7 +144,7 @@ const GeneratePage = () => {
     }
   }, [prompt, generationData, hasLoadedFromStorage]);
 
-  // Function to start backend generation
+  // Function to start backend generation with SSE
   const startGeneration = async () => {
     if (!prompt) return;
 
@@ -169,40 +169,57 @@ const GeneratePage = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      setGenerationStatus('GENERATING');
-      setProgressPercentage(30);
+      // Handle Server-Sent Events
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
 
-      const data = await response.json();
-
-      if (data.error) {
-        console.error('Generation failed:', data.error);
-        alert('Generation failed: ' + data.error);
-        setIsGenerating(false);
-        return;
+      if (!reader) {
+        throw new Error('No response body reader available');
       }
 
-      setGenerationStatus('DECOMPRESSING');
-      setProgressPercentage(70);
-
-      // Simulate the final stages based on backend logs
-      setTimeout(() => {
-        setGenerationStatus('SAVING');
-        setProgressPercentage(90);
-      }, 2000);
-
-      setTimeout(() => {
-        setGenerationStatus('SUCCESS');
-        setProgressPercentage(100);
+      while (true) {
+        const { done, value } = await reader.read();
         
-        setGenerationData(data);
-        setIsGenerating(false);
-        
-        // Store result in sessionStorage for persistence
-        sessionStorage.setItem('generationResult', JSON.stringify({
-          generationData: data,
-          prompt: prompt
-        }));
-      }, 4000);
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.complete) {
+                // Generation complete
+                if (data.error) {
+                  console.error('Generation failed:', data.error);
+                  alert('Generation failed: ' + data.error);
+                  setIsGenerating(false);
+                  return;
+                } else {
+                  setGenerationData(data);
+                  setIsGenerating(false);
+                  
+                  // Store result in sessionStorage for persistence
+                  sessionStorage.setItem('generationResult', JSON.stringify({
+                    generationData: data,
+                    prompt: prompt
+                  }));
+                }
+                break;
+              } else {
+                // Update status and progress
+                setGenerationStatus(data.status);
+                setProgressPercentage(data.progress);
+                setBackendInfo(data.message);
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        }
+      }
 
     } catch (error) {
       console.error('Error calling backend:', error);
@@ -412,7 +429,34 @@ const GeneratePage = () => {
                     <Plus className="w-10 h-10 text-white" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-white text-xl font-semibold mb-2">{generationStatus}</h3>
+                    <h3 className="text-white text-xl font-semibold mb-2">
+                      {(() => {
+                        switch (generationStatus) {
+                          case 'GENERATING_LYRICS':
+                            return 'Creating Lyrics';
+                          case 'LYRICS_COMPLETE':
+                            return 'Lyrics Complete';
+                          case 'PREPARING_AUDIO':
+                            return 'Preparing Audio';
+                          case 'PROMPT':
+                            return 'Processing Prompt';
+                          case 'TASK_SENT':
+                            return 'Sending to Audio Engine';
+                          case 'GENERATING':
+                            return 'Generating Audio';
+                          case 'DECOMPRESSING':
+                            return 'Processing Audio';
+                          case 'SAVING':
+                            return 'Saving Files';
+                          case 'SUCCESS':
+                            return 'Complete!';
+                          case 'FAILURE':
+                            return 'Generation Failed';
+                          default:
+                            return generationStatus;
+                        }
+                      })()}
+                    </h3>
                     <p className="text-white/70 text-base">
                       {backendInfo || 'Working on your musical vision'}
                     </p>

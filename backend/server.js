@@ -61,7 +61,7 @@ async function generateAudioWithSonauto({
     balanceStrength = 0.8,
     promptStrength = 1.56,
     outputFormat = "mp3",
-  }) {
+  }, sendStatus = null) {
     const sonaApiKey = process.env.SUNAOTO_API_KEY;
     if (!sonaApiKey) throw new Error("Set your SUNAOTO_API_KEY environment variable!");
   
@@ -106,6 +106,45 @@ async function generateAudioWithSonauto({
   
         const status = statusRes.data.status;
         console.log("Status:", status);
+        
+        // Send status updates to frontend
+        if (sendStatus) {
+          let progress = 50; // Base progress for audio generation
+          let message = 'Generating audio...';
+          
+          switch (status) {
+            case 'PROMPT':
+              progress = 50;
+              message = 'Processing prompt...';
+              break;
+            case 'TASK_SENT':
+              progress = 55;
+              message = 'Task sent to audio engine...';
+              break;
+            case 'GENERATING':
+              progress = 60;
+              message = 'Generating audio...';
+              break;
+            case 'DECOMPRESSING':
+              progress = 80;
+              message = 'Processing audio...';
+              break;
+            case 'SAVING':
+              progress = 90;
+              message = 'Saving audio files...';
+              break;
+            case 'SUCCESS':
+              progress = 95;
+              message = 'Audio generation complete!';
+              break;
+            case 'FAILURE':
+              progress = 0;
+              message = 'Audio generation failed';
+              break;
+          }
+          
+          sendStatus(status, progress, message);
+        }
   
         if (status === "SUCCESS") {
           songUrls = statusRes.data.song_paths;
@@ -137,7 +176,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'VerseForge API is running' });
 });
 
-// Song generation endpoint
+// Song generation endpoint with SSE
 app.post('/generate', async (req, res) => {
   try {
     const { userInput, temperature = 0.8, bpm = 135, balance = 1.0 } = req.body;
@@ -148,33 +187,55 @@ app.post('/generate', async (req, res) => {
 
     console.log('Starting song generation with:', { userInput, temperature, bpm, balance });
 
+    // Set up SSE headers
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control'
+    });
+
+    const sendStatus = (status, progress, message = '') => {
+      res.write(`data: ${JSON.stringify({ status, progress, message })}\n\n`);
+    };
+
     // Step 1: Generate lyrics
+    sendStatus('GENERATING_LYRICS', 10, 'Creating lyrics with AI...');
     const lyrics = await generateLyrics(userInput, temperature);
     console.log("Generated lyrics:", lyrics);
+    sendStatus('LYRICS_COMPLETE', 30, 'Lyrics generated successfully!');
 
     // Step 2: Build combined TTS prompt
     const ttsPrompt = `${userInput}\n\nLyrics:\n${lyrics}`;
+    sendStatus('PREPARING_AUDIO', 40, 'Preparing audio generation...');
 
-    // Step 3: Generate audio
+    // Step 3: Generate audio with real-time status updates
     const ttsLyrics = await generateAudioWithSonauto({
       prompt: ttsPrompt,
       bpm: bpm,
       balanceStrength: balance,
-    });
+    }, sendStatus);
 
-    // Return the results
-    res.json({
-      lyrics: lyrics,
-      ttsLyrics: ttsLyrics,
-      audioFiles: ['song_1.mp3', 'song_2.mp3']
-    });
+    // Final success
+    sendStatus('SUCCESS', 100, 'Song generation complete!');
+    res.write(`data: ${JSON.stringify({ 
+      lyrics: lyrics, 
+      ttsLyrics: ttsLyrics, 
+      audioFiles: ['song_1.mp3', 'song_2.mp3'],
+      complete: true 
+    })}\n\n`);
+    
+    res.end();
 
   } catch (error) {
     console.error('Error in song generation:', error);
-    res.status(500).json({ 
-      error: 'Failed to generate song',
-      details: error.message 
-    });
+    res.write(`data: ${JSON.stringify({ 
+      error: 'Failed to generate song', 
+      details: error.message,
+      complete: true 
+    })}\n\n`);
+    res.end();
   }
 });
 
