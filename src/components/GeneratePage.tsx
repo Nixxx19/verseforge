@@ -817,8 +817,8 @@ const GeneratePage = () => {
                   </div>
                 )}
 
-                {/* TTS Lyrics if available */}
-                {generationData?.ttsLyrics && (
+                {/* TTS Lyrics section hidden - using generated lyrics box instead */}
+                {/* {generationData?.ttsLyrics && (
                   <div>
                     <h4 className="text-white text-lg font-semibold mb-4 text-center">TTS Lyrics</h4>
                     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 max-h-40 overflow-y-auto">
@@ -827,7 +827,7 @@ const GeneratePage = () => {
                       </pre>
                     </div>
                   </div>
-                )}
+                )} */}
             </>
           )}
 
