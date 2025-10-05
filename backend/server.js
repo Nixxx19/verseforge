@@ -269,7 +269,7 @@ async function main() {
   console.log("Original LLaMA Lyrics (reference):\n", lyrics);
 
   // Step 2: Build combined TTS prompt (user input + lyrics)
-  const ttsPrompt = `${userInput}\n\nLyrics:\n${lyrics}`;
+  const ttsPrompt = userInput;
 
   // 🔹 NEW LOG: show exactly what is sent to TTS
   console.log("\n=== Prompt & Lyrcis sent to TTS ===\n", ttsPrompt);

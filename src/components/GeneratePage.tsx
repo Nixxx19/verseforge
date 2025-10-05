@@ -36,6 +36,8 @@ const GeneratePage = () => {
   const [songName, setSongName] = useState('Song Variant 1');
   const [isEditingName, setIsEditingName] = useState(false);
   const [customCoverImages, setCustomCoverImages] = useState<{[key: number]: string}>({});
+  const [likes, setLikes] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
   const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -715,11 +717,7 @@ const GeneratePage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => {
-                        if (audioRef.current) {
-                          audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15);
-                        }
-                      }}
+                      onClick={() => setCurrentVariant(prev => prev === 1 ? 0 : 1)}
                       className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
                     >
                       <SkipBack className="w-5 h-5" />
@@ -737,11 +735,7 @@ const GeneratePage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => {
-                        if (audioRef.current) {
-                          audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 15);
-                        }
-                      }}
+                      onClick={() => setCurrentVariant(prev => prev === 1 ? 0 : 1)}
                       className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
                     >
                       <SkipForward className="w-5 h-5" />
@@ -749,9 +743,14 @@ const GeneratePage = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" className="gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full px-3 py-2">
-                      <Heart className="w-4 h-4" />
-                      0
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => { setIsLiked((prev) => !prev); setLikes((n) => (isLiked ? Math.max(0, n - 1) : n + 1)); }}
+                      className={`gap-2 backdrop-blur-sm rounded-full px-3 py-2 transition-colors ${isLiked ? 'bg-white/20 text-white' : 'bg-white/5 hover:bg-white/10'}`}
+                    >
+                      <Heart className={`w-4 h-4 ${isLiked ? 'fill-current text-white' : ''}`} />
+                      {likes}
                     </Button>
                     <Button variant="ghost" size="sm" className="bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-full p-2">
                       <Share2 className="w-4 h-4" />

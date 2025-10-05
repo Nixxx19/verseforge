@@ -559,11 +559,11 @@ const HeroSection = () => {
           <div className="flex items-center justify-center gap-6 mt-8 text-white/60 text-sm">
             <span className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              0 songs created today
+              19 songs created today
             </span>
             <span className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-              15s average generation time
+              30s average generation time
             </span>
           </div>
         </div>
