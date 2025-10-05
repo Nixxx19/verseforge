@@ -804,17 +804,27 @@ const GeneratePage = () => {
                   </div>
                 )}
 
-                {/* Generated Lyrics */}
-                {generationData?.lyrics && showLyrics && (
-                  <div className="animate-in slide-in-from-bottom-4 duration-300">
-                    <h4 className="text-white text-lg font-semibold mb-4 text-center">Generated Lyrics</h4>
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 max-h-60 overflow-y-auto">
-                      <pre className="text-white/90 text-sm whitespace-pre-wrap font-mono leading-relaxed">
-                        {generationData.lyrics}
-                      </pre>
-                    </div>
-                  </div>
-                )}
+               {/* Generated Lyrics (including TTS lyrics if available) */}
+               {showLyrics && (generationData?.lyrics || generationData?.ttsLyrics) && (
+                 <div className="animate-in slide-in-from-bottom-4 duration-300">
+                   <h4 className="text-white text-lg font-semibold mb-4 text-center">Generated Lyrics</h4>
+                   <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 max-h-60 overflow-y-auto space-y-4">
+                     {generationData?.lyrics && (
+                       <pre className="text-white/90 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+                         {generationData.lyrics}
+                       </pre>
+                     )}
+                     {generationData?.ttsLyrics && (
+                       <div>
+                         <div className="text-xs uppercase tracking-wide text-white/60 mb-2 text-center">TTS Lyrics</div>
+                         <pre className="text-white/90 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+                           {generationData.ttsLyrics}
+                         </pre>
+                       </div>
+                     )}
+                   </div>
+                 </div>
+               )}
 
                 {/* TTS Lyrics section hidden - using generated lyrics box instead */}
                 {/* {generationData?.ttsLyrics && (

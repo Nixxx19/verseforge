@@ -1,0 +1,4 @@
+# Minimal core dependencies
+requests>=2.31.0,<3
+python-dotenv>=1.0.0,<2
+openai>=1.40.0,<2
